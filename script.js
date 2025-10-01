@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
         audience: document.getElementById('wildcard-audience'), 
         phone: document.getElementById('wildcard-call'), 
         
+        // NUEVO: Botón para minimizar/maximizar rondas
+        toggleRounds: document.getElementById('toggle-rounds-btn'), 
+        
         restartFail: document.getElementById('restart-fail-btn'),
         backToStartFail: document.getElementById('back-to-start-fail-btn'),
         restartWin: document.getElementById('restart-win-btn'),
@@ -45,10 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const gameElements = {
-        playerNameInput: document.getElementById('player-name'), // NUEVO: Campo de nombre
+        playerNameInput: document.getElementById('player-name'), 
         question: document.getElementById('question'),
         answers: document.getElementById('answer-options'),
         roundsList: document.getElementById('rounds-list'),
+        // NUEVO: Contenedor principal de rondas (para la clase 'minimized')
+        roundsContainer: document.getElementById('rounds-container'), 
         audiencePoll: document.getElementById('audience-poll'),
         phoneTimer: document.getElementById('phone-timer'),
         timerDisplay: document.getElementById('timer-display'),
@@ -56,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         winTitle: document.getElementById('win-title'),
         fireworksContainer: document.getElementById('fireworks-container'),
         rotatingCircle: document.getElementById('rotating-circle'),
-        // NUEVO: Elemento que se va a desvanecer en la pantalla de inicio
+        // Elemento que se va a desvanecer en la pantalla de inicio
         startScreenContent: document.querySelector('#start-screen .screen-content')
     };
     
@@ -67,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isHintUsed = false;
     let currentQuestionIndex = 0;
     let selectedAnswer = null;
-    let playerName = ''; // NUEVO: Almacena el nombre del jugador
+    let playerName = ''; 
 
     // --- DATOS DEL JUEGO (Preguntas y Puntos - Sin cambios) ---
     const questions = [
@@ -95,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // =========================================================
-    // FUNCIÓN TYPEWRITER (Sin cambios, pero crucial)
+    // FUNCIÓN TYPEWRITER
     // =========================================================
     function typeWriterEffect(element, text) {
         if (!element) return;
@@ -103,10 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
         element.classList.remove('typewriter-anim');
         void element.offsetWidth; // Forzar reflow
         element.classList.add('typewriter-anim');
-        // Asegúrate de que el número de steps en el CSS sea correcto (13 para ¡FELICIDADES!)
     }
     // =========================================================
-    
+
     // --- FUNCIÓN DE TRANSICIÓN DE PANTALLAS ---
     function showScreen(screenId) {
         for (let key in screens) {
@@ -123,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gameElements.rotatingCircle) gameElements.rotatingCircle.classList.add('hidden');
     }
     
-    // --- FUNCIONES DE MANEJO DE AUDIO (Sin cambios) ---
+    // --- FUNCIONES DE MANEJO DE AUDIO ---
     function playSound(soundKey, loop = false) {
         stopAllSounds();
         const sound = gameSounds[soundKey];
@@ -168,7 +172,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- FUNCIÓN DE INICIO DE JUEGO OPTIMIZADA (NUEVO) ---
+    // =========================================================
+    // NUEVA FUNCIÓN: REINICIO Y CONFIGURACIÓN DEL ESTADO DEL JUEGO
+    // (Llamada desde startGame y desde botones de Reinicio)
+    // =========================================================
+    function resetGameState() {
+        currentQuestionIndex = 0;
+        isPhoneUsed = false;
+        isAudienceUsed = false;
+        isHintUsed = false;
+        selectedAnswer = null;
+
+        // Limpieza de intervalos/timers
+        if (phoneTimerInterval !== null) {
+            clearInterval(phoneTimerInterval);
+            phoneTimerInterval = null;
+        }
+
+        // Limpiar animaciones/clases de victoria
+        if (gameElements.winTitle) {
+            gameElements.winTitle.classList.remove('typewriter-anim');
+            gameElements.winTitle.textContent = "";
+        }
+        if (gameElements.finalScoreDisplay) {
+            gameElements.finalScoreDisplay.classList.remove('visible');
+        }
+
+        // Mostrar botones de comodín si están ocultos por 'used'
+        if (buttons.hint) buttons.hint.classList.remove('used');
+        if (buttons.audience) buttons.audience.classList.remove('used');
+        if (buttons.phone) buttons.phone.classList.remove('used');
+        
+        // Asegurar que el panel de rondas esté visible al inicio del juego
+        if (gameElements.roundsContainer) {
+             gameElements.roundsContainer.classList.remove('minimized');
+             if (buttons.toggleRounds) buttons.toggleRounds.textContent = 'Ocultar Rondas ⬅️';
+        }
+
+        stopBackgroundMusic(); 
+        stopAllSounds();
+    }
+    // =========================================================
+
+    // --- FUNCIÓN DE INICIO DE JUEGO OPTIMIZADA ---
     function startGame() {
         const inputName = gameElements.playerNameInput ? gameElements.playerNameInput.value.trim() : 'Jugador Anónimo';
         
@@ -178,28 +224,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        playerName = inputName; // Guarda el nombre globalmente
-
-        stopBackgroundMusic(); 
-        stopAllSounds();
+        playerName = inputName; 
+        resetGameState(); // Reinicia el estado del juego
         playSound('start'); // Sonido de inicio de juego
 
-        currentQuestionIndex = 0;
-        isPhoneUsed = false;
-        isAudienceUsed = false;
-        isHintUsed = false;
-        
-        if (phoneTimerInterval !== null) {
-            clearInterval(phoneTimerInterval);
-            phoneTimerInterval = null;
-        }
-        
-        // Limpiar animación de victoria
-        if (gameElements.winTitle) {
-            gameElements.winTitle.classList.remove('typewriter-anim');
-            gameElements.winTitle.textContent = "";
-        }
-        
         // Ejecutar el desvanecimiento de la pantalla de inicio
         if (gameElements.startScreenContent) {
             gameElements.startScreenContent.classList.add('fade-out');
@@ -216,245 +244,258 @@ document.addEventListener('DOMContentLoaded', () => {
              loadQuestion();
         }
     }
-    // --- RESTO DE FUNCIONES DEL JUEGO (Omitidas para simplificar, ya estaban correctas) ---
+    
+    // =========================================================
+    // NUEVA FUNCIÓN: MANEJO DEL BOTÓN OCULTAR/MOSTRAR RONDAS
+    // =========================================================
+    function toggleRounds() {
+        if (!gameElements.roundsContainer || !buttons.toggleRounds) return;
+        
+        // Alterna la clase 'minimized'
+        gameElements.roundsContainer.classList.toggle('minimized');
+        
+        // Cambia el texto del botón basado en el nuevo estado
+        const isMinimized = gameElements.roundsContainer.classList.contains('minimized');
+        buttons.toggleRounds.textContent = isMinimized ? 'Mostrar Rondas ➡️' : 'Ocultar Rondas ⬅️';
+    }
+    // =========================================================
+    
+    // --- RESTO DE FUNCIONES DEL JUEGO ---
     
     function generateRoundsList() {
-         // ... tu código de generateRoundsList ...
-         if (!gameElements.roundsList) return; 
+        if (!gameElements.roundsList) return; 
 
-         gameElements.roundsList.innerHTML = '';
-         roundPoints.slice().reverse().forEach((points, index) => {
-             const roundNumber = 15 - index;
-             const li = document.createElement('li');
-             li.dataset.round = roundNumber - 1; 
-             li.innerHTML = `<span>Ronda ${roundNumber}</span><span>${points.toLocaleString()} Pts</span>`;
-             gameElements.roundsList.appendChild(li);
-         });
-     }
+        gameElements.roundsList.innerHTML = '';
+        roundPoints.slice().reverse().forEach((points, index) => {
+            const roundNumber = 15 - index;
+            const li = document.createElement('li');
+            li.dataset.round = roundNumber - 1; 
+            li.innerHTML = `<span>Ronda ${roundNumber}</span><span>${points.toLocaleString()} Pts</span>`;
+            gameElements.roundsList.appendChild(li);
+        });
+    }
 
-     function updateRoundsHighlight() {
-         // ... tu código de updateRoundsHighlight ...
-         if (!gameElements.roundsList) return;
+    function updateRoundsHighlight() {
+        if (!gameElements.roundsList) return;
 
-         const rounds = gameElements.roundsList.querySelectorAll('li');
-         rounds.forEach(li => li.classList.remove('current-round'));
+        const rounds = gameElements.roundsList.querySelectorAll('li');
+        rounds.forEach(li => li.classList.remove('current-round'));
 
-         const currentRoundLi = gameElements.roundsList.querySelector(`li[data-round="${currentQuestionIndex}"]`);
-         if (currentRoundLi) {
-             currentRoundLi.classList.add('current-round');
-         }
-     }
+        const currentRoundLi = gameElements.roundsList.querySelector(`li[data-round="${currentQuestionIndex}"]`);
+        if (currentRoundLi) {
+            currentRoundLi.classList.add('current-round');
+            // Desplazar la vista para que la ronda actual sea visible (útil en móvil)
+             currentRoundLi.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
 
-     function loadQuestion() {
-         // ... tu código de loadQuestion ...
-         selectedAnswer = null;
-         gameElements.answers.innerHTML = '';
-         buttons.reveal.style.display = 'inline-block';
-         buttons.next.style.display = 'none';
+    function loadQuestion() {
+        selectedAnswer = null;
+        gameElements.answers.innerHTML = '';
+        buttons.reveal.style.display = 'inline-block';
+        buttons.next.style.display = 'none';
 
-         // 🧹 Limpieza de Comodines/Temporizador
-         if (gameElements.audiencePoll) gameElements.audiencePoll.classList.add('hidden');
-         if (gameElements.phoneTimer) {
-             gameElements.phoneTimer.classList.add('hidden');
-             gameElements.timerDisplay.classList.remove('timer-urgent'); 
-         }
-         
-         if (phoneTimerInterval !== null) {
-             clearInterval(phoneTimerInterval);
-             phoneTimerInterval = null;
-         }
-             
-         if (buttons.restartFail) buttons.restartFail.style.display = 'none';
-         if (buttons.backToStartFail) buttons.backToStartFail.style.display = 'none'; 
+        // 🧹 Limpieza de Comodines/Temporizador
+        if (gameElements.audiencePoll) gameElements.audiencePoll.classList.add('hidden');
+        if (gameElements.phoneTimer) {
+            gameElements.phoneTimer.classList.add('hidden');
+            gameElements.timerDisplay.classList.remove('timer-urgent'); 
+        }
+        
+        if (phoneTimerInterval !== null) {
+            clearInterval(phoneTimerInterval);
+            phoneTimerInterval = null;
+        }
+        
+        if (buttons.restartFail) buttons.restartFail.style.display = 'none';
+        if (buttons.backToStartFail) buttons.backToStartFail.style.display = 'none'; 
 
-         // Mostrar/Ocultar y habilitar/deshabilitar botones de comodines
-         if (buttons.hint) {
-             buttons.hint.style.display = isHintUsed ? 'none' : 'inline-block';
-             buttons.hint.disabled = isHintUsed;
-             if(isHintUsed) buttons.hint.classList.add('used'); else buttons.hint.classList.remove('used'); 
-         }
-         if (buttons.audience) {
-             buttons.audience.style.display = isAudienceUsed ? 'none' : 'inline-block';
-             buttons.audience.disabled = isAudienceUsed;
-             if(isAudienceUsed) buttons.audience.classList.add('used'); else buttons.audience.classList.remove('used');
-         }
-         if (buttons.phone) {
-             buttons.phone.style.display = isPhoneUsed ? 'none' : 'inline-block';
-             buttons.phone.disabled = isPhoneUsed;
-             if(isPhoneUsed) buttons.phone.classList.add('used'); else buttons.phone.classList.remove('used');
-         }
+        // Mostrar/Ocultar y habilitar/deshabilitar botones de comodines (usa la clase 'used')
+        if (buttons.hint) {
+            buttons.hint.style.display = 'inline-block';
+            buttons.hint.disabled = isHintUsed;
+            if(isHintUsed) buttons.hint.classList.add('used'); else buttons.hint.classList.remove('used'); 
+        }
+        if (buttons.audience) {
+            buttons.audience.style.display = 'inline-block';
+            buttons.audience.disabled = isAudienceUsed;
+            if(isAudienceUsed) buttons.audience.classList.add('used'); else buttons.audience.classList.remove('used');
+        }
+        if (buttons.phone) {
+            buttons.phone.style.display = 'inline-block';
+            buttons.phone.disabled = isPhoneUsed;
+            if(isPhoneUsed) buttons.phone.classList.add('used'); else buttons.phone.classList.remove('used');
+        }
 
-         // 🔊 Reproducir música de suspenso
-         playSound('suspense', true); 
-     
-         const currentQuestion = questions[currentQuestionIndex];
-         gameElements.question.textContent = currentQuestion.question;
+        // 🔊 Reproducir música de suspenso
+        playSound('suspense', true); 
+    
+        const currentQuestion = questions[currentQuestionIndex];
+        gameElements.question.textContent = currentQuestion.question;
 
-         currentQuestion.answers.forEach((answer, index) => {
-             const button = document.createElement('button');
-             button.textContent = String.fromCharCode(65 + index) + ": " + answer; 
-             button.classList.add('answer-btn');
-             button.dataset.index = index;
-             button.style.visibility = 'visible'; 
-             button.addEventListener('click', selectAnswer);
-             gameElements.answers.appendChild(button);
-         });
+        currentQuestion.answers.forEach((answer, index) => {
+            const button = document.createElement('button');
+            button.textContent = String.fromCharCode(65 + index) + ": " + answer; 
+            button.classList.add('answer-btn');
+            button.dataset.index = index;
+            button.style.visibility = 'visible'; 
+            button.addEventListener('click', selectAnswer);
+            gameElements.answers.appendChild(button);
+        });
 
-         updateRoundsHighlight();
-     }
+        updateRoundsHighlight();
+    }
 
-     function selectAnswer(event) {
-         // ... tu código de selectAnswer ...
-         const previouslySelected = document.querySelector('.answer-btn.selected');
-         if (previouslySelected) {
-             previouslySelected.classList.remove('selected');
-         }
-         const selectedButton = event.target;
-         selectedAnswer = parseInt(selectedButton.dataset.index);
-         selectedButton.classList.add('selected');
-     }
+    function selectAnswer(event) {
+        const previouslySelected = document.querySelector('.answer-btn.selected');
+        if (previouslySelected) {
+            previouslySelected.classList.remove('selected');
+        }
+        const selectedButton = event.target;
+        selectedAnswer = parseInt(selectedButton.dataset.index);
+        selectedButton.classList.add('selected');
+    }
 
-     function revealAnswer() {
-         // ... tu código de revealAnswer ...
-         if (selectedAnswer === null) {
-             alert("Por favor, selecciona una respuesta.");
-             return;
-         }
+    function revealAnswer() {
+        if (selectedAnswer === null) {
+            alert("Por favor, selecciona una respuesta.");
+            return;
+        }
 
-         const currentQuestion = questions[currentQuestionIndex];
-         const correctIndex = currentQuestion.correctAnswer;
-         const answerButtons = document.querySelectorAll('.answer-btn');
+        const currentQuestion = questions[currentQuestionIndex];
+        const correctIndex = currentQuestion.correctAnswer;
+        const answerButtons = document.querySelectorAll('.answer-btn');
 
-         // Detener temporizador y limpiar urgencia al revelar
-         if (phoneTimerInterval !== null) {
-             clearInterval(phoneTimerInterval);
-             phoneTimerInterval = null;
-         }
-         if (gameElements.phoneTimer) {
-             gameElements.phoneTimer.classList.add('hidden');
-             gameElements.timerDisplay.classList.remove('timer-urgent'); 
-         }
-         
-         // Deshabilitar botones de comodines para la pregunta actual
-         if (buttons.hint) buttons.hint.disabled = true;
-         if (buttons.audience) buttons.audience.disabled = true;
-         if (buttons.phone) buttons.phone.disabled = true;
-         
-         // 🔊 Detener el suspenso inmediatamente
-         stopAllSounds(); 
+        // Detener temporizador y limpiar urgencia al revelar
+        if (phoneTimerInterval !== null) {
+            clearInterval(phoneTimerInterval);
+            phoneTimerInterval = null;
+        }
+        if (gameElements.phoneTimer) {
+            gameElements.phoneTimer.classList.add('hidden');
+            gameElements.timerDisplay.classList.remove('timer-urgent'); 
+        }
+        
+        // Deshabilitar botones de comodines para la pregunta actual
+        if (buttons.hint) buttons.hint.disabled = true;
+        if (buttons.audience) buttons.audience.disabled = true;
+        if (buttons.phone) buttons.phone.disabled = true;
+        
+        // 🔊 Detener el suspenso inmediatamente
+        stopAllSounds(); 
 
-         let isCorrect = (selectedAnswer === correctIndex);
+        let isCorrect = (selectedAnswer === correctIndex);
 
-         // 🔊 Lógica de Sonido
-         if (isCorrect) {
-             playSound('correct'); 
-         } else {
-             playSound('wrong'); 
-         }
+        // 🔊 Lógica de Sonido
+        if (isCorrect) {
+            playSound('correct'); 
+        } else {
+            playSound('wrong'); 
+        }
 
-         // Lógica de Resaltado de Respuestas (omisión de detalles)
-         answerButtons.forEach(button => {
-             button.disabled = true;
-             const buttonIndex = parseInt(button.dataset.index);
-             if (buttonIndex === correctIndex) {
-                 button.classList.add('correct');
-             } else if (buttonIndex === selectedAnswer) {
-                 button.classList.add('wrong');
-             }
-         });
+        // Lógica de Resaltado de Respuestas
+        answerButtons.forEach(button => {
+            button.disabled = true;
+            const buttonIndex = parseInt(button.dataset.index);
+            if (buttonIndex === correctIndex) {
+                button.classList.add('correct');
+            } else if (buttonIndex === selectedAnswer) {
+                button.classList.add('wrong');
+            }
+        });
 
-         buttons.reveal.style.display = 'none';
-         
-         if (isCorrect) {
-             if (currentQuestionIndex === questions.length - 1) {
-                 buttons.next.textContent = "Ver Resultado Final";
-             }
-             buttons.next.style.display = 'inline-block';
-         } else {
-             // El jugador PERDIÓ (omisión de detalles)
-             const winAmountIndex = (currentQuestionIndex >= 10) ? 9 : (currentQuestionIndex >= 5) ? 4 : -1;
-             const finalScore = winAmountIndex >= 0 ? roundPoints[winAmountIndex] : 0;
-             
-             gameElements.question.textContent = "¡Respuesta Incorrecta! El juego ha terminado.";
-             gameElements.answers.innerHTML = `<p style="font-size: 1.6em; color: #ff536aff;">Perdiste esta vez, pero la biblia dice en Filipenses 4:9 En cuanto a lo que habéis aprendido, recibido y oído de mí, y visto en mí, eso haced; y el Dios de la paz estará con vosotros... tu puntuacion es.: ${finalScore.toLocaleString()} Pts</p>`;
-             buttons.next.style.display = 'none';
-             
-             if (buttons.restartFail) {
-                 buttons.restartFail.style.display = 'inline-block';
-                 buttons.restartFail.textContent = "Volver a Intentarlo"; 
-                 buttons.restartFail.classList.add('restart-btn-fail'); 
-             }
-             if (buttons.backToStartFail) {
-                 buttons.backToStartFail.style.display = 'inline-block';
-                 buttons.backToStartFail.textContent = "Ir a Inicio"; 
-                 buttons.backToStartFail.classList.add('back-to-start-fail-btn'); 
-             }
-         }
-     } 
+        buttons.reveal.style.display = 'none';
+        
+        if (isCorrect) {
+            if (currentQuestionIndex === questions.length - 1) {
+                buttons.next.textContent = "Ver Resultado Final";
+            }
+            buttons.next.style.display = 'inline-block';
+        } else {
+            // El jugador PERDIÓ
+            const winAmountIndex = (currentQuestionIndex >= 10) ? 9 : (currentQuestionIndex >= 5) ? 4 : -1;
+            const finalScore = winAmountIndex >= 0 ? roundPoints[winAmountIndex] : 0;
+            
+            gameElements.question.textContent = "¡Respuesta Incorrecta! El juego ha terminado.";
+            gameElements.answers.innerHTML = `<p style="font-size: 1.6em; color: #ff536aff;">Perdiste esta vez, pero la biblia dice en Filipenses 4:9 En cuanto a lo que habéis aprendido, recibido y oído de mí, y visto en mí, eso haced; y el Dios de la paz estará con vosotros... tu puntuacion es.: ${finalScore.toLocaleString()} Pts</p>`;
+            buttons.next.style.display = 'none';
+            
+            if (buttons.restartFail) {
+                buttons.restartFail.style.display = 'inline-block';
+                buttons.restartFail.textContent = "Volver a Intentarlo"; 
+                buttons.restartFail.classList.add('restart-btn-fail'); 
+            }
+            if (buttons.backToStartFail) {
+                buttons.backToStartFail.style.display = 'inline-block';
+                buttons.backToStartFail.textContent = "Ir a Inicio"; 
+                buttons.backToStartFail.classList.add('back-to-start-fail-btn'); 
+            }
+        }
+    } 
 
-     // =========================================================
-     // FUNCIÓN DE VICTORIA CON ENVÍO DE DATOS
-     // =========================================================
-     function nextQuestion() {
-         if (currentQuestionIndex === questions.length - 1) {
-             
-             stopAllSounds(); 
-             playSound('win'); 
-             stopBackgroundMusic(); 
-             
-             showScreen('win'); 
-             
-             const winText = "¡FELICIDADES!";
-             if (gameElements.winTitle) {
-                 typeWriterEffect(gameElements.winTitle, winText);
-             }
-             
-             if (gameElements.fireworksContainer) {
-                  gameElements.fireworksContainer.classList.remove('hidden'); 
-             }
-             if (gameElements.rotatingCircle) {
-                  gameElements.rotatingCircle.classList.remove('hidden'); 
-             }
+    // =========================================================
+    // FUNCIÓN DE VICTORIA CON ENVÍO DE DATOS
+    // =========================================================
+    function nextQuestion() {
+        if (currentQuestionIndex === questions.length - 1) {
+            
+            stopAllSounds(); 
+            playSound('win'); 
+            stopBackgroundMusic(); 
+            
+            showScreen('win'); 
+            
+            const winText = "¡FELICIDADES!";
+            if (gameElements.winTitle) {
+                typeWriterEffect(gameElements.winTitle, winText);
+            }
+            
+            if (gameElements.fireworksContainer) {
+                 gameElements.fireworksContainer.classList.remove('hidden'); 
+            }
+            if (gameElements.rotatingCircle) {
+                 gameElements.rotatingCircle.classList.remove('hidden'); 
+            }
 
-             const finalPrize = roundPoints[14].toLocaleString();
-             
-             if (gameElements.finalScoreDisplay) {
-                 gameElements.finalScoreDisplay.textContent = `¡Has ganado el gran premio de ${finalPrize} Pts, ${playerName}!`;
-                 gameElements.finalScoreDisplay.classList.remove('visible'); 
-                 if (buttons.restartWin) buttons.restartWin.style.display = 'none';
-                 if (buttons.backToStartWin) buttons.backToStartWin.style.display = 'none';
-             }
-             
-             // Envía el resultado a FormSubmit
-             sendToFormSubmit(playerName, roundPoints[14]);
+            const finalPrize = roundPoints[14].toLocaleString();
+            
+            if (gameElements.finalScoreDisplay) {
+                gameElements.finalScoreDisplay.textContent = `¡Has ganado el gran premio de ${finalPrize} Pts, ${playerName}!`;
+                gameElements.finalScoreDisplay.classList.remove('visible'); 
+                if (buttons.restartWin) buttons.restartWin.style.display = 'none';
+                if (buttons.backToStartWin) buttons.backToStartWin.style.display = 'none';
+            }
+            
+            // Envía el resultado a FormSubmit
+            sendToFormSubmit(playerName, roundPoints[14]);
 
-             // Secuencia de animación de victoria
-             setTimeout(() => {
-                 if(gameElements.finalScoreDisplay) gameElements.finalScoreDisplay.classList.add('visible');
-             }, 3000); 
+            // Secuencia de animación de victoria
+            setTimeout(() => {
+                if(gameElements.finalScoreDisplay) gameElements.finalScoreDisplay.classList.add('visible');
+            }, 3000); 
 
-             setTimeout(() => {
-                 if(buttons.restartWin) buttons.restartWin.style.display = 'inline-block';
-                 if(buttons.backToStartWin) buttons.backToStartWin.style.display = 'inline-block';
-             }, 4000);
-             
-         } else {
-             currentQuestionIndex++;
-             loadQuestion();
-         }
-     } 
+            setTimeout(() => {
+                if(buttons.restartWin) buttons.restartWin.style.display = 'inline-block';
+                if(buttons.backToStartWin) buttons.backToStartWin.style.display = 'inline-block';
+            }, 4000);
+            
+        } else {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+    } 
 
-     // =========================================================
-     // NUEVA FUNCIÓN: ENVÍO DE DATOS A FORMSUBMIT
-     // Asegúrate de reemplazar 'TU_URL_FORMSUBMIT' con la URL real de tu formulario.
-     // =========================================================
-     function sendToFormSubmit(player, score) {
+    // =========================================================
+    // NUEVA FUNCIÓN: ENVÍO DE DATOS A FORMSUBMIT
+    // =========================================================
+    function sendToFormSubmit(player, score) {
         const formData = new FormData();
         formData.append('Nombre', player);
         formData.append('Puntuacion', `${score.toLocaleString()} Pts`);
         formData.append('Resultado', 'VICTORIA (1,000,000 Pts)');
 
-        const formUrl = 'https://formsubmit.co/el/gehali'; // <-- ¡REEMPLAZA ESTO!
+        // !!! IMPORTANTE: REEMPLAZA ESTO CON TU URL DE FORMULARIO DE FORMSSUBMIT !!!
+        const formUrl = 'https://formsubmit.co/el/gehali'; 
 
         fetch(formUrl, {
             method: 'POST',
@@ -473,130 +514,129 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => {
             console.error("Error de red al intentar enviar el formulario:", error);
         });
-     }
-     // =========================================================
+    }
+    // =========================================================
 
 
-     // --- FUNCIONES DE COMODINES (Omitidas para simplificar, ya estaban correctas) ---
-     function useHint() {
-         // ... tu código de useHint ...
-         if (isHintUsed) return;
-         isHintUsed = true;
-         buttons.hint.disabled = true;
-         if (buttons.hint) buttons.hint.classList.add('used');
-         
-         const currentQuestion = questions[currentQuestionIndex];
-         const correctIndex = currentQuestion.correctAnswer;
-         const answerButtons = document.querySelectorAll('.answer-btn');
-         
-         const incorrectIndices = [];
-         answerButtons.forEach((btn, index) => {
-             if (index !== correctIndex && btn.style.visibility !== 'hidden') {
-                 incorrectIndices.push(index);
-             }
-         });
+    // --- FUNCIONES DE COMODINES ---
+    function useHint() {
+        if (isHintUsed) return;
+        isHintUsed = true;
+        buttons.hint.disabled = true;
+        if (buttons.hint) buttons.hint.classList.add('used');
+        
+        const currentQuestion = questions[currentQuestionIndex];
+        const correctIndex = currentQuestion.correctAnswer;
+        const answerButtons = document.querySelectorAll('.answer-btn');
+        
+        const incorrectIndices = [];
+        answerButtons.forEach((btn, index) => {
+            if (index !== correctIndex && btn.style.visibility !== 'hidden') {
+                incorrectIndices.push(index);
+            }
+        });
 
-         while (incorrectIndices.length > 1) {
-             const randomIndex = Math.floor(Math.random() * incorrectIndices.length);
-             const indexToRemove = incorrectIndices.splice(randomIndex, 1)[0];
-             answerButtons[indexToRemove].style.visibility = 'hidden';
-             answerButtons[indexToRemove].disabled = true; 
-         }
-     }
+        while (incorrectIndices.length > 1) {
+            const randomIndex = Math.floor(Math.random() * incorrectIndices.length);
+            const indexToRemove = incorrectIndices.splice(randomIndex, 1)[0];
+            answerButtons[indexToRemove].style.visibility = 'hidden';
+            answerButtons[indexToRemove].disabled = true; 
+        }
+    }
 
-     function useAudience() {
-         // ... tu código de useAudience ...
-         if (isAudienceUsed) return;
-         isAudienceUsed = true;
-         buttons.audience.disabled = true;
-         if (buttons.audience) buttons.audience.classList.add('used');
+    function useAudience() {
+        if (isAudienceUsed) return;
+        isAudienceUsed = true;
+        buttons.audience.disabled = true;
+        if (buttons.audience) buttons.audience.classList.add('used');
 
-         const currentQuestion = questions[currentQuestionIndex];
-         const correctIndex = currentQuestion.correctAnswer;
-         const percentages = [0, 0, 0, 0];
-         let remaining = 100;
+        const currentQuestion = questions[currentQuestionIndex];
+        const correctIndex = currentQuestion.correctAnswer;
+        const percentages = [0, 0, 0, 0];
+        let remaining = 100;
 
-         const correctPercentage = Math.floor(Math.random() * 40) + 50; 
-         percentages[correctIndex] = correctPercentage;
-         remaining -= correctPercentage;
+        const correctPercentage = Math.floor(Math.random() * 40) + 50; 
+        percentages[correctIndex] = correctPercentage;
+        remaining -= correctPercentage;
 
-         const incorrectIndices = [0, 1, 2, 3].filter(i => i !== correctIndex);
-         
-         for (let i = 0; i < incorrectIndices.length; i++) {
-             const index = incorrectIndices[i];
-             
-             if (i === incorrectIndices.length - 1) {
-                 percentages[index] = remaining;
-             } else {
-                 const maxAllocation = Math.min(remaining, Math.floor(remaining / (incorrectIndices.length - i)) * 2 || 1);
-                 let randomPart = Math.floor(Math.random() * maxAllocation);
-                 if (randomPart === 0 && remaining > 0) randomPart = 1;
-                 
-                 percentages[index] = randomPart;
-                 remaining -= randomPart;
-             }
-         }
-         
-         if (!gameElements.audiencePoll) return;
-         gameElements.audiencePoll.classList.remove('hidden');
+        const incorrectIndices = [0, 1, 2, 3].filter(i => i !== correctIndex);
+        
+        for (let i = 0; i < incorrectIndices.length; i++) {
+            const index = incorrectIndices[i];
+            
+            if (i === incorrectIndices.length - 1) {
+                percentages[index] = remaining;
+            } else {
+                const maxAllocation = Math.min(remaining, Math.floor(remaining / (incorrectIndices.length - i)) * 2 || 1);
+                let randomPart = Math.floor(Math.random() * maxAllocation);
+                if (randomPart === 0 && remaining > 0) randomPart = 1;
+                
+                percentages[index] = randomPart;
+                remaining -= randomPart;
+            }
+        }
+        
+        if (!gameElements.audiencePoll) return;
+        gameElements.audiencePoll.classList.remove('hidden');
 
-         document.querySelectorAll('.poll-bar').forEach((bar, index) => {
-             const pollPercentage = bar.querySelector('.poll-percentage');
-             if (pollPercentage) {
-                 pollPercentage.style.height = percentages[index] + '%';
-                 pollPercentage.textContent = percentages[index] + '%';
-             }
-         });
-     }
+        document.querySelectorAll('.poll-bar').forEach((bar, index) => {
+            const pollPercentage = bar.querySelector('.poll-percentage');
+            if (pollPercentage) {
+                pollPercentage.style.height = percentages[index] + '%';
+                pollPercentage.textContent = percentages[index] + '%';
+            }
+        });
+    }
 
-     function usePhone() {
-         // ... tu código de usePhone ...
-         if (isPhoneUsed) return;
-         isPhoneUsed = true;
-         buttons.phone.disabled = true;
-         if (buttons.phone) buttons.phone.classList.add('used');
+    function usePhone() {
+        if (isPhoneUsed) return;
+        isPhoneUsed = true;
+        buttons.phone.disabled = true;
+        if (buttons.phone) buttons.phone.classList.add('used');
 
-         if (!gameElements.phoneTimer || !gameElements.timerDisplay) return;
-         
-         gameElements.phoneTimer.classList.remove('hidden');
-         let timeLeft = 60;
-         gameElements.timerDisplay.textContent = timeLeft;
+        if (!gameElements.phoneTimer || !gameElements.timerDisplay) return;
+        
+        gameElements.phoneTimer.classList.remove('hidden');
+        let timeLeft = 60;
+        gameElements.timerDisplay.textContent = timeLeft;
 
-         if (phoneTimerInterval !== null) clearInterval(phoneTimerInterval);
-         
-         phoneTimerInterval = setInterval(() => {
-             timeLeft--;
-             gameElements.timerDisplay.textContent = timeLeft;
-             
-             // --- MODIFICACIÓN: Lógica de Urgencia del Temporizador ---
-             if (timeLeft <= 10) {
-                 gameElements.timerDisplay.classList.add('timer-urgent');
-             } else {
-                 gameElements.timerDisplay.classList.remove('timer-urgent');
-             }
-             // --------------------------------------------------------
-             
-             if (timeLeft <= 0) {
-                 clearInterval(phoneTimerInterval);
-                 phoneTimerInterval = null;
-                 gameElements.phoneTimer.classList.add('hidden');
-                 gameElements.timerDisplay.classList.remove('timer-urgent'); 
-                 alert("Tiempo de llamada agotado.");
-             }
-         }, 1000);
-         
-         setTimeout(() => {
-             const currentQuestion = questions[currentQuestionIndex];
-             const correctText = String.fromCharCode(65 + currentQuestion.correctAnswer);
-             alert(`Tu amigo dice: 'Estoy 90% seguro de que la respuesta correcta es la ${correctText}.'`);
-         }, 10000); 
-     }
+        if (phoneTimerInterval !== null) clearInterval(phoneTimerInterval);
+        
+        phoneTimerInterval = setInterval(() => {
+            timeLeft--;
+            gameElements.timerDisplay.textContent = timeLeft;
+            
+            // Lógica de Urgencia del Temporizador
+            if (timeLeft <= 10) {
+                gameElements.timerDisplay.classList.add('timer-urgent');
+            } else {
+                gameElements.timerDisplay.classList.remove('timer-urgent');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(phoneTimerInterval);
+                phoneTimerInterval = null;
+                gameElements.phoneTimer.classList.add('hidden');
+                gameElements.timerDisplay.classList.remove('timer-urgent'); 
+                alert("Tiempo de llamada agotado.");
+            }
+        }, 1000);
+        
+        setTimeout(() => {
+            const currentQuestion = questions[currentQuestionIndex];
+            const correctText = String.fromCharCode(65 + currentQuestion.correctAnswer);
+            alert(`Tu amigo dice: 'Estoy 90% seguro de que la respuesta correcta es la ${correctText}.'`);
+        }, 10000); 
+    }
 
     // --- EVENT LISTENERS (MANEJO DE CLICKS) ---
 
     // CLAVE: Usa el nuevo flujo startGame con el desvanecimiento
     if (buttons.start) buttons.start.addEventListener('click', startGame);
     if (buttons.startFromRules) buttons.startFromRules.addEventListener('click', startGame);
+    
+    // NUEVO: Listener para alternar el panel de rondas
+    if (buttons.toggleRounds) buttons.toggleRounds.addEventListener('click', toggleRounds); 
     
     if (buttons.showRules) buttons.showRules.addEventListener('click', () => { 
         showScreen('rules'); 
@@ -615,19 +655,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listener para el botón de Reinicio (dentro del juego)
     if (buttons.restartFail) buttons.restartFail.addEventListener('click', () => {
-        stopAllSounds(); 
-        startGame();
+        startGame(); // Llama a startGame que se encarga de resetear y cargar la primera pregunta
         buttons.restartFail.style.display = 'none'; 
         if (buttons.backToStartFail) buttons.backToStartFail.style.display = 'none'; 
     });
 
     // LISTENER PARA EL BOTÓN DE VOLVER A INICIO (después de Fallar)
     if (buttons.backToStartFail) buttons.backToStartFail.addEventListener('click', () => {
-        stopAllSounds(); 
-        if (phoneTimerInterval !== null) {
-            clearInterval(phoneTimerInterval);
-            phoneTimerInterval = null;
-        }
+        resetGameState(); // Reinicia el estado
         showScreen('start');
         startBackgroundMusic(); 
         
@@ -637,12 +672,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Listeners de la Pantalla de Victoria
     if (buttons.restartWin) buttons.restartWin.addEventListener('click', () => {
-        stopAllSounds(); 
         startGame();
     });
 
     if (buttons.backToStartWin) buttons.backToStartWin.addEventListener('click', () => {
-        stopAllSounds(); 
+        resetGameState();
         showScreen('start');
         startBackgroundMusic(); 
     });

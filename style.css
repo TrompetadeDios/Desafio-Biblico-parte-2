@@ -7,7 +7,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     color: white;
-    overflow: hidden; /* Evita barras de scroll */
+    overflow: hidden; /* Evita barras de scroll en el body, la gestión se hace en los contenedores */
 }
 
 /* --- ESTILOS DE PANTALLAS (INICIO, REGLAS, JUEGO, VICTORIA) --- */
@@ -187,8 +187,16 @@ h1 {
     background-color: rgba(11, 12, 58, 0.95);
 }
 
-/* Panel de Rondas */
+/* -------------------------------------------------------------------- */
+/* --- ESTILOS ADICIONALES PARA OCULTAR/MOSTRAR RONDAS (MODIFICADO) --- */
+/* -------------------------------------------------------------------- */
 #rounds-container {
+    /* Agregamos una transición para que el movimiento sea suave */
+    transition: transform 0.4s ease-in-out, width 0.4s ease-in-out; 
+    /* Permitimos que el botón quede fuera del área del contenedor sin ser cortado */
+    overflow: visible; 
+    
+    /* Mantenemos tus estilos existentes: */
     background-color: rgba(11, 12, 58, 0.8);
     padding: 20px;
     border-radius: 15px;
@@ -197,6 +205,52 @@ h1 {
     max-height: 80vh;
     overflow-y: auto;
 }
+
+/* CLASE CLAVE: ESTILO DE ESCRITORIO (Deslizamiento fuera de vista) */
+#rounds-container.minimized {
+    /* Mueve el panel hacia la izquierda, ocultándolo de la vista */
+    transform: translateX(-280px); /* 250px de ancho + un pequeño margen */
+}
+
+/* Ocultamos el contenido (lista y título) cuando el contenedor está minimizado */
+#rounds-container.minimized #rounds-content {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-out; /* Transición rápida de salida */
+}
+
+/* Estilo del botón de alternar visibilidad */
+#toggle-rounds-btn {
+    padding: 8px 15px; 
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    background-color: #348cff; /* Color diferente para destacarlo */
+    color: white;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 0 5px rgba(52, 140, 255, 0.5);
+    transition: background-color 0.3s;
+    /* Colocamos el botón al inicio del contenedor */
+    display: block; 
+}
+
+#toggle-rounds-btn:hover {
+    background-color: #5a9fff;
+}
+
+/* Aseguramos que el contenido real de rondas se ajuste a la animación */
+#rounds-content {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Ajusta el margen del h2 para evitar que el contenido se mueva mucho al ocultar el h2*/
+#rounds-content h2 {
+    margin-top: 0;
+}
+/* -------------------------------------------------------------------- */
+/* --- FIN ESTILOS OCULTAR/MOSTRAR RONDAS --- */
+/* -------------------------------------------------------------------- */
+
 
 #rounds-list {
     list-style: none;
@@ -559,7 +613,7 @@ h1 {
 }
 
 /* ---------------------------------------------------- */
-/* --- INYECCIÓN DE ESTRELLAS CSS PURO (SINTAXIS CORREGIDA) --- */
+/* --- INYECCIÓN DE ESTRELLAS CSS PURO --- */
 /* ---------------------------------------------------- */
 .star {
     position: absolute;
@@ -611,7 +665,7 @@ h1 {
     width: 100%; 
     
     /* Importante: El número de 'steps' (pasos) debe coincidir con la longitud del texto.
-       Para "¡FELICIDADES!", son 13 caracteres (contando el ¡ y !). */
+        Para "¡FELICIDADES!", son 13 caracteres (contando el ¡ y !). */
     animation: 
         typewriter 2.5s steps(13) forwards, /* 13 pasos para 13 caracteres, 2.5s de duración */
         blink-cursor 0.75s step-end infinite;
@@ -672,22 +726,42 @@ h1 {
         align-items: center;    /* Centra los elementos apilados */
         padding-top: 20px;
         height: auto;           /* Permite que la altura crezca y la página se desplace */
-        overflow-y: auto;       /* Permite el scroll vertical en la pantalla de juego */
     }
 
-    /* 1. Panel de Rondas */
+    /* 1. Panel de Rondas (AJUSTES CLAVE PARA EL BOTÓN) */
     #rounds-container {
         width: 90%; /* Ocupa casi todo el ancho disponible */
         max-height: 25vh; /* Limita la altura de la lista de rondas para dejar espacio a la pregunta */
         order: -1; /* Mueve el panel de rondas a la parte superior */
         margin-bottom: 20px;
+        /* MUY IMPORTANTE: Anula la transformación de deslizamiento de escritorio */
+        transform: none !important; 
+        overflow-y: auto; 
     }
     
-    /* 2. Contenedor Principal (Pregunta y Respuestas) */
+    /* CLASE EN MÓVIL: SÓLO OCULTAR EL CONTENIDO INTERNO */
+    /* Sobreescribe el estilo de opacidad de escritorio, ocultando con display: none; */
+    #rounds-container.minimized #rounds-content {
+        display: none;
+        opacity: 1; 
+        pointer-events: auto; 
+    }
+
+    /* Ajustamos el contenedor al colapsar el contenido para que el espacio ocupado sea mínimo */
+    #rounds-container.minimized {
+        max-height: fit-content; /* Se ajusta a la altura del botón */
+        overflow-y: hidden; /* Evita que muestre la barra de scroll si está colapsado */
+        width: 100%; /* El botón de 'Mostrar Rondas' ocupa todo el ancho */
+    }
+    
+    /* 2. Contenedor Principal (Pregunta y Respuestas) - ¡AQUÍ ESTÁ LA SOLUCIÓN! */
     .game-container {
         width: 90%; /* Ocupa casi todo el ancho disponible */
         max-width: none; 
         padding: 15px;
+        /* *** CAMBIO CLAVE: Habilita el SCROLL INTERNO *** */
+        max-height: 60vh; /* Limita la altura del contenedor para forzar el scroll */
+        overflow-y: auto; /* Muestra la barra de desplazamiento solo cuando sea necesario */
     }
     
     /* 3. Opciones de Respuesta */
