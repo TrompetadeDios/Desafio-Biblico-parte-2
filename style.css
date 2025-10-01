@@ -1,0 +1,582 @@
+/* --- ESTILOS GENERALES Y DE FONDO --- */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    background-color: #0b0c3a; 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    overflow: hidden; /* Evita barras de scroll */
+}
+
+/* --- ESTILOS DE PANTALLAS (INICIO, REGLAS, JUEGO, VICTORIA) --- */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: none; /* Ocultas por defecto */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: transparent; 
+    transition: opacity 0.5s;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.screen.active {
+    display: flex; /* Muestra la pantalla activa */
+}
+
+/* --- MODIFICACIÓN 1: Fondo Degradado Animado para Pantalla de Inicio (Inmersivo) --- */
+#start-screen.active {
+    /* Fondo con colores cian/morado para un look moderno */
+    background: linear-gradient(-45deg, #a006c7, #348cff, #e937e9, #0f2027);
+    background-size: 400% 400%; 
+    animation: GradientAnimation 15s ease infinite; 
+}
+
+/* Define los pasos clave de la animación (keyframes) */
+@keyframes GradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.screen-content {
+    padding: 20px;
+    z-index: 10; /* Asegura que el contenido esté sobre el círculo y los destellos */
+}
+
+/* --- MODIFICACIÓN 2: Efecto Neón para Títulos --- */
+h1 {
+    font-size: 3.5em;
+    /* Efecto neón/brillo en blanco/ciano */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 
+                 0 0 20px rgba(0, 255, 255, 0.6); 
+    color: white;
+}
+
+/* Estilos para la caja de reglas */
+.rules-box {
+    background-color: rgba(26, 26, 92, 0.9);
+    border: 2px solid #5a5ac7;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 600px;
+}
+
+.rules-box h2 {
+    margin-top: 0;
+}
+
+.rules-box ul {
+    text-align: left;
+    line-height: 1.6;
+    list-style: disc;
+}
+
+/* --- ESTILOS DE BOTONES --- */
+.button-container {
+    margin-top: 30px;
+}
+
+.btn, #reveal-btn, #next-btn {
+    background-color: #ffc107;
+    color: #0b0c3a;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+/* Aplicamos el efecto Neón al hover del botón, solo si es un botón de inicio/reglas */
+#start-screen .btn, #rules-screen .btn {
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); /* Sombra base de neón amarillo */
+    background-color: #ffc107;
+}
+
+#start-screen .btn:hover, #rules-screen .btn:hover {
+    background-color: #ffda6a;
+    transform: scale(1.05);
+    /* Aumento de brillo al hacer hover */
+    box-shadow: 0 0 15px #ffc107, 0 0 40px rgba(255, 193, 7, 0.8);
+}
+
+/* Estilos de botones de juego (sin neón, manteniendo la estética de la app) */
+#reveal-btn:hover, #next-btn:hover {
+    background-color: #ffda6a;
+    transform: scale(1.05);
+}
+
+/* --- ESTILOS DE LA PANTALLA DE JUEGO (FONDO Y CONTENEDORES) --- */
+#game-screen {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding-top: 50px;
+    
+    /* MODIFICACIÓN: Fondo Oscuro con Degradado Fijo (Más sutil) */
+    background: linear-gradient(135deg, #7e1dda 0%, #1f7af1 70%, #6523fd 100%);
+    background-size: cover;
+    background-color: rgba(11, 12, 58, 0.95);
+}
+
+/* Panel de Rondas */
+#rounds-container {
+    background-color: rgba(11, 12, 58, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #5a5ac7;
+    width: 250px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#rounds-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+#rounds-list li {
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 8px;
+    background-color: #1a1a5c;
+    display: flex;
+    justify-content: space-between;
+    transition: background-color 0.3s;
+}
+
+/* Estilo para la ronda actual */
+#rounds-list li.current-round {
+    background-color: #ffa500;
+    color: #0b0c3a;
+    font-weight: bold;
+}
+
+/* Contenedor principal del juego (pregunta y respuestas) */
+.game-container {
+    width: 60%;
+    max-width: 800px;
+    /* MODIFICACIÓN: Glassmorphism y Brillo Sutil */
+    background-color: rgba(26, 26, 92, 0.7); 
+    backdrop-filter: blur(5px); /* Efecto cristal */
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.1); /* Brillo cian sutil */
+    border: 1px solid rgba(0, 255, 255, 0.2); /* Borde delgado y brillante */
+    text-align: center;
+}
+
+#question-container, .answer-options, #controls {
+    margin-bottom: 20px;
+}
+
+#question {
+    font-size: 1.5em;
+    padding: 15px;
+    background-color: #2c2c8d;
+    border-radius: 10px;
+}
+
+.answer-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.answer-btn {
+    background-color: #2c2c8d;
+    color: white;
+    border: 2px solid #5a5ac7;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s; /* Asegura transición para animación */
+}
+
+.answer-btn:hover {
+    background-color: #3e3e9e;
+}
+
+/* --- Animación de pulsación al seleccionar respuesta --- */
+.answer-btn.selected {
+    background-color: #ffa500;
+    border-color: #ffc966;
+    animation: pulse 0.5s infinite alternate; 
+    box-shadow: 0 0 15px rgba(255, 165, 0, 0.8);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+    }
+    100% {
+        transform: scale(1.02);
+        box-shadow: 0 0 15px rgba(255, 165, 0, 1);
+    }
+}
+/* -------------------------------------------------------------------- */
+
+
+.answer-btn.correct {
+    background-color: #28a745;
+    border-color: #72d68b;
+}
+
+.answer-btn.wrong {
+    background-color: #dc3545;
+    border-color: #f58c97;
+}
+
+#next-btn {
+    display: none; /* Oculto por defecto */
+}
+
+/* --- ESTILOS DE COMODINES --- */
+#wildcards-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.wildcard-btn {
+    background-color: #2c2c8d;
+    color: white;
+    border: 2px solid #5a5ac7;
+    border-radius: 50%; /* Botones redondos */
+    width: 80px;
+    height: 80px;
+    font-size: 0.8em;
+    cursor: pointer;
+    /* MODIFICACIÓN: Transición para la animación de salida */
+    transition: all 0.5s ease-out; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.wildcard-btn:hover {
+    background-color: #3e3e9e;
+    border-color: #ffc107;
+}
+
+.wildcard-btn i {
+    font-size: 1.5em; /* Tamaño del ícono */
+}
+
+/* --- Animación de Salida para Comodín Usado --- */
+.wildcard-btn.used {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.5) rotate(90deg); /* Se encoge y rota al desaparecer */
+}
+/* -------------------------------------------------------- */
+
+
+/* --- ESTILOS DE GRÁFICA DE AUDIENCIA --- */
+#audience-poll {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 120px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #5a5ac7;
+    border-radius: 10px;
+}
+
+.poll-bar {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffc107;
+}
+
+.poll-percentage {
+    background-color: #28a745;
+    width: 100%;
+    transition: height 0.5s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    font-size: 0.9em;
+    padding-bottom: 5px;
+}
+
+/* --- ESTILOS DEL TEMPORIZADOR --- */
+#phone-timer {
+    font-size: 2em;
+    font-weight: bold;
+    color: #ffc107;
+    margin-bottom: 20px;
+}
+
+/* --- Animación de parpadeo de urgencia --- */
+.timer-urgent {
+    color: #dc3545; /* Rojo */
+    animation: blink 0.5s steps(1, start) infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+/* ---------------------------------------------------- */
+
+
+.restart-btn-fail {
+    background-color: #dc3545; /* Rojo de fallo */
+    color: white;
+    padding: 10px 20px;
+    border: 2px solid #a71d2a;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.restart-btn-fail:hover {
+    background-color: #a71d2a;
+}
+
+.back-to-start-fail-btn {
+    background-color: #007bff; /* Azul estándar */
+    color: white;
+    padding: 10px 20px;
+    border: 2px solid #0056b3;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    margin-left: 10px; /* Separación del botón de Reinicio */
+    transition: background-color 0.3s;
+}
+
+.back-to-start-fail-btn:hover {
+    background-color: #0056b3;
+}
+
+/* ========================================================= */
+/* --- NUEVOS ESTILOS PARA LA PANTALLA DE VICTORIA (#win-screen) --- */
+/* ========================================================= */
+
+#win-screen {
+    /* Fondo muy oscuro o negro para que los efectos de luz resalten */
+    background-color: #000000; 
+    
+    /* MODIFICACIÓN: Efecto de fondo de partículas o estrellas */
+    background-image: radial-gradient(circle, #0b0c3a 1px, transparent 0); 
+    background-size: 40px 40px; 
+    
+    /* Brillo constante y centelleante para dar sensación de triunfo */
+    animation: background-pulse 4s infinite alternate;
+    position: relative; /* Necesario para posicionar los elementos hijos */
+}
+
+/* Animación de pulso para el fondo de victoria */
+@keyframes background-pulse {
+    0% {
+        box-shadow: inset 0 0 50px rgba(0, 174, 255, 0.2); /* Sutil cian */
+    }
+    100% {
+        box-shadow: inset 0 0 150px rgba(140, 0, 255, 0.82); /* Intenso morado */
+    }
+}
+
+#win-screen h1 {
+    /* Estilo de título más dramático */
+    font-size: 5em !important; /* Importante para sobrescribir el h1 general */
+    text-shadow: 0 0 20px #8f05ff, /* Neón morado principal */
+                 0 0 40px #ff00c8, /* Tono magenta */
+                 0 0 60px #00a2ff; /* Tono azul/cian */
+    /* Animación de destello suave */
+    animation: neon-flicker 1.5s infinite alternate; 
+    font-weight: 900;
+}
+
+@keyframes neon-flicker {
+    0%, 100% {
+        text-shadow: 0 0 10px #07daff, 0 0 20px #b700ff;
+    }
+    50% {
+        text-shadow: 0 0 5px #fff, 0 0 15px #0077ff;
+    }
+}
+
+#final-score-display {
+    color: #ffd700; /* Oro */
+    font-weight: bold;
+    font-size: 2em !important; /* Asegura el tamaño de la fuente */
+    /* Efecto 3D y brillo */
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.5), 
+                 0 0 10px rgba(255, 215, 0, 0.8);
+    opacity: 0; /* Oculto inicialmente, se mostrará con la clase .visible del JS */
+    transition: opacity 0.8s ease-in;
+}
+
+#final-score-display.visible {
+    opacity: 1;
+}
+
+/* ---------------------------------------------------- */
+/* --- NUEVO: CÍRCULO GIRATORIO CENTRAL --- */
+/* ---------------------------------------------------- */
+#rotating-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Ajusta el tamaño al gusto */
+    width: 300px; 
+    height: 300px;
+    /* Mueve el centro del elemento al centro de la pantalla */
+    transform: translate(-50%, -50%); 
+    border-radius: 50%;
+    box-shadow: 0 0 30px #00a2ff, inset 0 0 30px #ff00c8;
+    z-index: 5; /* Detrás del mensaje pero delante del fondo */
+    
+    /* Degradado del borde para simular energía */
+    border: 5px solid transparent; 
+    background-image: linear-gradient(#000000, #000000), 
+                      linear-gradient(to right, #00a2ff, #ff00c8);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    
+    /* Animación de giro */
+    animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ---------------------------------------------------- */
+/* --- NUEVO: DESTELLEOS TIPO FUEGOS ARTIFICIALES (ESTÁTICOS) --- */
+/* ---------------------------------------------------- */
+#fireworks-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Detrás de todo el contenido */
+    overflow: hidden;
+}
+
+/* Crea 20 destellos de diferentes colores y tamaños */
+/* La parte de SCSS se ha reemplazado por la inyección manual de CSS puro */
+
+@keyframes twinkle {
+    0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+}
+
+/* ---------------------------------------------------- */
+/* --- INYECCIÓN DE ESTRELLAS CSS PURO --- */
+/* ---------------------------------------------------- */
+.star {
+    position: absolute;
+    border-radius: 50%;
+    background-color: white; /* Color base */
+    box-shadow: 0 0 5px #fff, 0 0 10px #ff00c8, 0 0 15px #00a2ff;
+}
+
+/* Estrellas Estáticas Manuales (para simular los fuegos artificiales estáticos) */
+.star:nth-child(1) { top: 10%; left: 80%; width: 2px; height: 2px; animation: twinkle 3s infinite alternate; }
+.star:nth-child(2) { top: 35%; left: 15%; width: 3px; height: 3px; animation: twinkle 4.5s infinite alternate; animation-delay: 0.5s; }
+.star:nth-child(3) { top: 60%; left: 90%; width: 1px; height: 1px; animation: twinkle 3.8s infinite alternate; animation-delay: 1s; }
+.star:nth-child(4) { top: 85%; left: 5%; width: 4px; height: 4px; animation: twinkle 5s infinite alternate; animation-delay: 1.5s; }
+.star:nth-child(5) { top: 5%; left: 40%; width: 2px; height: 2px; animation: twinkle 3.2s infinite alternate; animation-delay: 2s; }
+.star:nth-child(6) { top: 70%; left: 75%; width: 3px; height: 3px; animation: twinkle 4s infinite alternate; animation-delay: 2.5s; }
+.star:nth-child(7) { top: 20%; left: 5%; width: 1px; height: 1px; animation: twinkle 3.6s infinite alternate; animation-delay: 1.2s; }
+.star:nth-child(8) { top: 55%; left: 25%; width: 2px; height: 2px; animation: twinkle 4.8s infinite alternate; animation-delay: 0.8s; }
+.star:nth-child(9) { top: 90%; left: 60%; width: 3px; height: 3px; animation: twinkle 3.4s infinite alternate; animation-delay: 0.1s; }
+.star:nth-child(10) { top: 15%; left: 60%; width: 2px; height: 2px; animation: twinkle 4.2s infinite alternate; animation-delay: 1.8s; }
+/* Añadir más destellos para una mejor cobertura */
+.star:nth-child(11) { top: 45%; left: 85%; width: 1px; height: 1px; animation: twinkle 3.1s infinite alternate; animation-delay: 0.3s; }
+.star:nth-child(12) { top: 75%; left: 10%; width: 2px; height: 2px; animation: twinkle 5.5s infinite alternate; animation-delay: 1.9s; }
+.star:nth-child(13) { top: 25%; left: 95%; width: 3px; height: 3px; animation: twinkle 3.7s infinite alternate; animation-delay: 0.7s; }
+.star:nth-child(14) { top: 80%; left: 40%; width: 1px; height: 1px; animation: twinkle 4.9s infinite alternate; animation-delay: 2.2s; }
+.star:nth-child(15) { top: 50%; left: 5%; width: 2px; height: 2px; animation: twinkle 3.3s infinite alternate; animation-delay: 1.6s; }
+.star:nth-child(16) { top: 5%; left: 90%; width: 3px; height: 3px; animation: twinkle 4.1s infinite alternate; animation-delay: 0.6s; }
+.star:nth-child(17) { top: 95%; left: 20%; width: 1px; height: 1px; animation: twinkle 3.9s infinite alternate; animation-delay: 2.8s; }
+.star:nth-child(18) { top: 65%; left: 50%; width: 2px; height: 2px; animation: twinkle 4.7s infinite alternate; animation-delay: 0.4s; }
+.star:nth-child(19) { top: 30%; left: 70%; width: 3px; height: 3px; animation: twinkle 3.5s infinite alternate; animation-delay: 1.4s; }
+.star:nth-child(20) { top: 70%; left: 30%; width: 1px; height: 1px; animation: twinkle 5.1s infinite alternate; animation-delay: 2.1s; }
+
+/* ========================================================= */
+/* --- MODIFICACIÓN CLAVE: ANIMACIÓN TYPEWRITER (CSS PURO) --- */
+/* ========================================================= */
+
+#win-title {
+    /* CLAVE: Estilos iniciales para el efecto */
+    white-space: nowrap; /* Asegura que el texto permanezca en una sola línea */
+    overflow: hidden;    /* Oculta el texto que excede el width */
+    width: 0;            /* Inicialmente, el ancho es 0 (texto oculto) */
+    border-right: 0.15em solid white; /* Simula el cursor de la máquina de escribir */
+    /* La transición del width NO debe ser suave, debe ser por pasos */
+}
+
+/* Clase añadida por JavaScript para disparar la animación */
+#win-title.typewriter-anim {
+    /* El ancho final debe ser 100% para revelar todo el texto */
+    width: 100%; 
+    
+    /* Importante: El número de 'steps' (pasos) debe coincidir con la longitud del texto.
+       Para "¡FELICIDADES!", son 13 caracteres (contando el ¡ y !). */
+    animation: 
+        typewriter 2.5s steps(13) forwards, /* 13 pasos para 13 caracteres, 2.5s de duración */
+        blink-cursor 0.75s step-end infinite;
+}
+
+/* Define la animación de tipeo: solo anima el ancho de 0 a 100% */
+@keyframes typewriter {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+/* Define la animación del cursor: parpadeo */
+@keyframes blink-cursor {
+    from, to { border-color: transparent }
+    50% { border-color: white }
+}
