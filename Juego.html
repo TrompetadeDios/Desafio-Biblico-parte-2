@@ -6,14 +6,22 @@
     <title>Desafio Biblico</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png"> 
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon.png">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico"> 
 </head>
 <body>
 
-    <div id="start-screen" class="screen active">
+    <div id="start-screen" class="screen active fade-target">
         <audio id="background-music" loop autoplay></audio> 
 
         <div class="screen-content">
             <h1>Desafio Biblico</h1>
+            
+            <div class="input-group">
+                <label for="player-name">Introduce tu Nombre:</label>
+                <input type="text" id="player-name" placeholder="Ej. David o María" required>
+            </div>
             <div class="button-container">
                 <button id="start-btn" class="btn">Empezar Juego</button>
                 <button id="rules-btn" class="btn">Reglas</button>
@@ -21,7 +29,7 @@
         </div>
     </div>
 
-    <div id="rules-screen" class="screen">
+    <div id="rules-screen" class="screen fade-target">
         <div class="screen-content rules-box">
             <h2>Reglas del Juego</h2>
             <ul>
@@ -143,6 +151,9 @@
             </div>
         </div>
     </div>
+    <footer id="footer-copyright">
+        <p>&copy; 2025 Copyright. Desarrollado con 💙 por Samuel Elías.</p>
+    </footer>
 
     <script src="script.js"></script> 
 </body>

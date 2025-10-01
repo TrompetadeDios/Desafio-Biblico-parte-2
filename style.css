@@ -34,6 +34,20 @@ body {
     display: flex; /* Muestra la pantalla activa */
 }
 
+/* --- ESTILOS DE TRANSICIÓN Y FADE-OUT (NUEVO) --- */
+.fade-target {
+    /* Asegura que la opacidad y la posición se puedan animar suavemente */
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+/* Clase añadida por JavaScript para ejecutar el desvanecimiento */
+.fade-out {
+    opacity: 0 !important; 
+    transform: translateY(-20px); /* Mover hacia arriba ligeramente al desvanecer */
+    pointer-events: none; /* Desactiva la interacción mientras se desvanece */
+}
+/* --- FIN DE ESTILOS DE TRANSICIÓN --- */
+
 /* --- MODIFICACIÓN 1: Fondo Degradado Animado para Pantalla de Inicio (Inmersivo) --- */
 #start-screen.active {
     /* Fondo con colores cian/morado para un look moderno */
@@ -69,6 +83,41 @@ h1 {
     color: white;
 }
 
+/* --- ESTILOS PARA EL CAMPO DE NOMBRE (REVISADO) --- */
+.input-group {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.input-group label {
+    display: block;
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
+}
+
+#player-name {
+    padding: 12px 20px;
+    font-size: 1.1em;
+    border-radius: 8px;
+    border: 2px solid #5a5ac7; 
+    background-color: rgba(26, 26, 92, 0.8); 
+    color: #ffc107; 
+    width: 80%;
+    max-width: 350px;
+    transition: all 0.3s;
+    box-shadow: 0 0 10px rgba(90, 90, 199, 0.5); 
+}
+
+#player-name:focus {
+    outline: none;
+    border-color: #ffc107; 
+    box-shadow: 0 0 15px #ffc107; 
+    background-color: #1a1a5c;
+}
+/* --- FIN DE ESTILOS DE CAMPO DE NOMBRE --- */
+
 /* Estilos para la caja de reglas */
 .rules-box {
     background-color: rgba(26, 26, 92, 0.9);
@@ -97,12 +146,12 @@ h1 {
     background-color: #ffc107;
     color: #0b0c3a;
     border: none;
-    border-radius: 10px;
+    border-radius: 13px;
     padding: 15px 30px;
     font-size: 1.2em;
     cursor: pointer;
     transition: all 0.3s;
-    margin: 0 10px;
+    margin: 10px;
     font-weight: bold;
 }
 
@@ -494,8 +543,6 @@ h1 {
 }
 
 /* Crea 20 destellos de diferentes colores y tamaños */
-/* La parte de SCSS se ha reemplazado por la inyección manual de CSS puro */
-
 @keyframes twinkle {
     0% {
         opacity: 0.2;
@@ -512,7 +559,7 @@ h1 {
 }
 
 /* ---------------------------------------------------- */
-/* --- INYECCIÓN DE ESTRELLAS CSS PURO --- */
+/* --- INYECCIÓN DE ESTRELLAS CSS PURO (SINTAXIS CORREGIDA) --- */
 /* ---------------------------------------------------- */
 .star {
     position: absolute;
@@ -544,6 +591,7 @@ h1 {
 .star:nth-child(19) { top: 30%; left: 70%; width: 3px; height: 3px; animation: twinkle 3.5s infinite alternate; animation-delay: 1.4s; }
 .star:nth-child(20) { top: 70%; left: 30%; width: 1px; height: 1px; animation: twinkle 5.1s infinite alternate; animation-delay: 2.1s; }
 
+
 /* ========================================================= */
 /* --- MODIFICACIÓN CLAVE: ANIMACIÓN TYPEWRITER (CSS PURO) --- */
 /* ========================================================= */
@@ -551,8 +599,8 @@ h1 {
 #win-title {
     /* CLAVE: Estilos iniciales para el efecto */
     white-space: nowrap; /* Asegura que el texto permanezca en una sola línea */
-    overflow: hidden;    /* Oculta el texto que excede el width */
-    width: 0;            /* Inicialmente, el ancho es 0 (texto oculto) */
+    overflow: hidden; /* Oculta el texto que excede el width */
+    width: 0; /* Inicialmente, el ancho es 0 (texto oculto) */
     border-right: 0.15em solid white; /* Simula el cursor de la máquina de escribir */
     /* La transición del width NO debe ser suave, debe ser por pasos */
 }
@@ -579,4 +627,95 @@ h1 {
 @keyframes blink-cursor {
     from, to { border-color: transparent }
     50% { border-color: white }
+}
+
+/* ========================================================= */
+/* --- ESTILOS DEL FOOTER/COPYRIGHT (REINSERTADO Y FIJO) --- */
+/* ========================================================= */
+#footer-copyright {
+    position: fixed; /* Lo mantiene fijo en la pantalla */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px 0; /* Un poco más pequeño para móviles */
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7); 
+    color: #888; 
+    font-size: 0.8em;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0, 255, 255, 0.1); 
+}
+
+#footer-copyright p {
+    margin: 0;
+}
+
+
+/* ========================================================= */
+/* --- MEDIA QUERY PRINCIPAL PARA TELÉFONOS (RESPONSIVIDAD) --- */
+/* ========================================================= */
+@media (max-width: 800px) {
+
+    /* --- TÍTULOS Y FUENTES --- */
+    h1 {
+        font-size: 2.2em; /* Reduce el tamaño del título principal para que quepa */
+    }
+    
+    .rules-box {
+        width: 90%; /* Asegura que la caja de reglas no exceda el ancho de la pantalla */
+        padding: 20px;
+    }
+
+    /* --- PANTALLA DE JUEGO (CLAVE) --- */
+    #game-screen {
+        flex-direction: column; /* Apila los paneles verticalmente (en lugar de lado a lado) */
+        align-items: center;    /* Centra los elementos apilados */
+        padding-top: 20px;
+        height: auto;           /* Permite que la altura crezca y la página se desplace */
+        overflow-y: auto;       /* Permite el scroll vertical en la pantalla de juego */
+    }
+
+    /* 1. Panel de Rondas */
+    #rounds-container {
+        width: 90%; /* Ocupa casi todo el ancho disponible */
+        max-height: 25vh; /* Limita la altura de la lista de rondas para dejar espacio a la pregunta */
+        order: -1; /* Mueve el panel de rondas a la parte superior */
+        margin-bottom: 20px;
+    }
+    
+    /* 2. Contenedor Principal (Pregunta y Respuestas) */
+    .game-container {
+        width: 90%; /* Ocupa casi todo el ancho disponible */
+        max-width: none; 
+        padding: 15px;
+    }
+    
+    /* 3. Opciones de Respuesta */
+    .answer-options {
+        grid-template-columns: 1fr; /* Cambia de 2 columnas a 1 columna (una respuesta por fila) */
+        gap: 10px;
+    }
+
+    /* 4. Comodines */
+    #wildcards-container {
+        gap: 10px;
+        flex-wrap: wrap; /* Permite que los comodines salten de línea si es necesario */
+    }
+    
+    .wildcard-btn {
+        width: 60px; /* Reduce el tamaño de los botones de comodín */
+        height: 60px;
+        font-size: 0.7em;
+    }
+
+    /* 5. Título de Victoria (para que no sea excesivamente grande) */
+    #win-screen h1 {
+        font-size: 3em !important;
+    }
+    
+    /* 6. Ajuste del Copyright para que sea más legible en móvil */
+    #footer-copyright {
+        font-size: 0.9em; /* Ligeramente más grande para legibilidad */
+        padding: 6px 0; /* Menos espacio vertical */
+    }
 }
