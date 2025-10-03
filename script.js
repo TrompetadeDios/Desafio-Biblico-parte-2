@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================
     // ⭐ MODIFICACIÓN CLAVE 1: Banco completo de 60 preguntas
-    //    Tu antigua constante `questions` ha sido reemplazada.
     // =========================================================
     const allAvailableQuestions = [
         // --- 15 PREGUNTAS ORIGINALES DEL USUARIO ---
@@ -201,8 +200,57 @@ document.addEventListener('DOMContentLoaded', () => {
         { question: "¿Cuál fue la esposa de Abraham que dio a luz a Isaac?", answers: ["Agar", "Rebeca", "Sara", "Raquel"], correctAnswer: 2 },
         { question: "¿Cuál fue el castigo de la esposa de Lot por mirar hacia Sodoma?", answers: ["Se convirtió en ceniza", "Se convirtió en estatua de sal", "Se quedó ciega", "Fue tragada por la tierra"], correctAnswer: 1 },
         { question: "¿Cuántos libros tiene el Antiguo Testamento (en la Biblia protestante)?", answers: ["27", "39", "66", "45"], correctAnswer: 1 },
-        { question: "¿Qué palabra griega se usa a menudo para referirse a la segunda venida de Cristo?", answers: ["Koinonía", "Parousía", "Agape", "Logos"], correctAnswer: 1 }
-    // --- FINAL DEL NUEVO BLOQUE DE 60 PREGUNTAS ---
+        { question: "¿Qué palabra griega se usa a menudo para referirse a la segunda venida de Cristo?", answers: ["Koinonía", "Parousía", "Agape", "Logos"], correctAnswer: 1 },
+    // --- FINAL DEL NUEVO BLOQUE DE 60 PREGUNTAS ---//
+        { question: "¿En qué pasaje de Juan se afirma que Jesús es la luz del mundo, que todo hombre ve, pero que el mundo no lo recibió?", answers: ["Juan 1:9", "Juan 1:10", "Juan 3:19", "Juan 8:12"], correctAnswer: 1 },
+        { question: "¿Qué profeta del Antiguo Testamento predijo que el Mesías sería llamado 'Admirable, Consejero, Dios Fuerte'?", answers: ["Malaquías", "Ezequiel", "Isaías", "Jeremías"], correctAnswer: 2 },
+        { question: "¿Cuál de los evangelios enfatiza la naturaleza de Cristo como el 'Hijo del Hombre' con más frecuencia?", answers: ["Mateo", "Marcos", "Juan", "Lucas"], correctAnswer: 3 },
+        { question: "¿Cuál es el significado literal del nombre 'Emanuel', un título dado a Jesús?", answers: ["Salvador del mundo", "Dios con nosotros", "Mesías ungido", "Luz de Israel"], correctAnswer: 1 },
+        { question: "¿En qué libro se describe a Jesús como el 'Sumo Sacerdote según el orden de Melquisedec'?", answers: ["Gálatas", "1 Pedro", "Romanos", "Hebreos"], correctAnswer: 3 },
+        { question: "¿Cuál de estos atributos de Jesús (según la teología bíblica) se refiere a que Él no pecó?", answers: ["Omnipotencia", "Omnisciencia", "Inmutabilidad", "Impecabilidad"], correctAnswer: 3 },
+        { question: "En Colosenses 1:15, ¿cómo se describe a Jesús en relación con la creación?", answers: ["El Creador", "La Imagen del Dios invisible", "El Verbo hecho carne", "El Primogénito de entre los muertos"], correctAnswer: 1 },
+        { question: "¿Cuál de las Siete Palabras de Jesús en la Cruz se cumple directamente una profecía de los Salmos?", answers: ["Padre, perdónalos", "Tengo sed", "Todo está consumado", "Dios mío, Dios mío, ¿por qué me has desamparado?"], correctAnswer: 3 },
+        { question: "¿Cuál de las epístolas paulinas desarrolla más extensamente la doctrina de la preexistencia de Cristo?", answers: ["1 Corintios", "Efesios", "Filipenses", "2 Timoteo"], correctAnswer: 2 },
+        { question: "¿Qué suceso, narrado en los evangelios, demuestra la dualidad de la naturaleza (humana y divina) de Jesús?", answers: ["La Multiplicación de los panes", "La Resurrección de Lázaro", "La Transfiguración", "La Oración en Getsemaní"], correctAnswer: 2 },
+        { question: "¿Cuál de los evangelios NO narra el milagro de la multiplicación de los panes y los peces para alimentar a 5,000 hombres?", answers: ["Mateo", "Marcos", "Lucas", "Ninguno, está en los cuatro"], correctAnswer: 3 },
+        { question: "En el Sermón del Monte, ¿qué comparativo usó Jesús para describir a sus seguidores en relación con el mundo?", answers: ["Viñas y Labradores", "Candelero y Lámpara", "Ovejas y Lobos", "Sal y Luz"], correctAnswer: 3 },
+        { question: "¿Cuántos años tenía la mujer que Jesús sanó de un flujo de sangre?", answers: ["Doce", "Treinta y tres", "Doce años", "Veinte"], correctAnswer: 2 },
+        { question: "¿Qué enseñanza impartió Jesús justo después de que Pedro intentara caminar sobre el agua?", answers: ["La necesidad de orar", "La grandeza de la fe", "La poca fe", "La obediencia"], correctAnswer: 2 },
+        { question: "¿Cuál fue el último milagro de sanidad registrado en el Evangelio de Mateo?", answers: ["La sanación del paralítico", "La sanación del siervo del centurión", "La sanación de dos ciegos en Jericó", "La sanación del leproso"], correctAnswer: 2 },
+        { question: "¿Cuál es la 'perla de gran precio' en la parábola de Jesús?", answers: ["El Reino de los Cielos", "La Vida Eterna", "La Salvación", "La Verdad Absoluta"], correctAnswer: 0 },
+        { question: "¿Qué discípulo de Jesús, además de Pedro, lo acompañó a la casa de Jairo para resucitar a su hija?", answers: ["Mateo y Juan", "Jacobo y Juan", "Andrés y Felipe", "Tomás y Bartolomé"], correctAnswer: 1 },
+        { question: "¿Cuántas veces, según los evangelios sinópticos, predijo Jesús su pasión (sufrimiento y muerte)?", answers: ["Dos", "Tres", "Cuatro", "Siete"], correctAnswer: 1 },
+        { question: "¿A qué personaje bíblico se le llama 'El Discípulo Amado' en el Evangelio de Juan?", answers: ["Pedro", "Jacobo", "Juan", "Lázaro"], correctAnswer: 2 },
+        { question: "¿Cuál fue la profesión de Zaqueo antes de encontrarse con Jesús?", answers: ["Pescador", "Carpintero", "Jefe de publicanos", "Agricultor"], correctAnswer: 2 },
+        { question: "¿Qué rey gobernaba Judea cuando nació Jesús?", answers: ["Herodes Filipo", "Herodes el Grande", "Herodes Antipas", "Agripa I"], correctAnswer: 1 },
+        { question: "Según el Evangelio de Lucas, ¿cuántos días después de su nacimiento fue presentado Jesús en el templo?", answers: ["Siete", "Treinta y tres", "Cuarenta", "Ochenta"], correctAnswer: 2 },
+        { question: "¿Cuál era el nombre del hombre que ayudó a Jesús a llevar la cruz?", answers: ["Simón el Fariseo", "Simón de Cirene", "José de Arimatea", "Nicodemo"], correctAnswer: 1 },
+        { question: "¿Cuál fue el nombre del sumo sacerdote que interrogó a Jesús antes de ser llevado ante Pilato?", answers: ["Anás", "Caifás", "Anás y Caifás", "Barrabás"], correctAnswer: 2 },
+        { question: "¿Cuál fue el nombre del lugar donde Jesús dio su último mandato (La Gran Comisión)?", answers: ["Monte Sinaí", "Monte de los Olivos", "Un monte en Galilea", "El templo en Jerusalén"], correctAnswer: 2 },
+        { question: "¿Qué profeta es citado en el Evangelio de Mateo para justificar la huida de la familia de Jesús a Egipto?", answers: ["Jeremías", "Miqueas", "Oseas", "Zacarías"], correctAnswer: 2 },
+        { question: "¿Cuántas piezas de plata le dieron a Judas Iscariote por traicionar a Jesús?", answers: ["Diez", "Veinte", "Treinta", "Cuarenta"], correctAnswer: 2 },
+        { question: "¿Cuál es la frase que Poncio Pilato mandó a escribir en el letrero sobre la cruz de Jesús (en latín)?", answers: ["Rex Iudaeorum", "Filius Dei", "INRI", "Pater Noster"], correctAnswer: 2 },
+        { question: "¿Cuál fue el nombre del apóstol que sustituyó a Judas Iscariote después de la Ascensión de Jesús?", answers: ["Matías", "Bernabé", "Esteban", "Timoteo"], correctAnswer: 0 },
+        { question: "¿Cuántas legiones de ángeles dijo Jesús que podía llamar si lo deseaba en Getsemaní?", answers: ["Siete", "Diez", "Doce", "Cuarenta"], correctAnswer: 2 },
+        { question: "¿En qué Evangelio Jesús se aparece primero a María Magdalena, pero ella no lo reconoce?", answers: ["Mateo", "Marcos", "Lucas", "Juan"], correctAnswer: 3 },
+        { question: "¿A qué dos discípulos se apareció Jesús en el camino a Emaús?", answers: ["Pedro y Juan", "Felipe y Andrés", "Cleofas y otro discípulo", "Santiago y Bartolomé"], correctAnswer: 2 },
+        { question: "¿Cuántos días pasaron entre la resurrección de Jesús y su ascensión al cielo?", answers: ["Siete", "Treinta y tres", "Cuarenta", "Cincuenta"], correctAnswer: 2 },
+        { question: "Después de la resurrección, ¿cuál de estos actos realizó Jesús para convencer a los discípulos de que no era un espíritu?", answers: ["Les mostró las manos y los pies", "Comió un pedazo de pescado asado", "Les dio el Espíritu Santo", "Todas las anteriores"], correctAnswer: 3 },
+        { question: "¿Cuál fue el primer apóstol en entrar en el sepulcro vacío de Jesús?", answers: ["Pedro", "Juan", "Tomás", "Mateo"], correctAnswer: 1 },
+        { question: "¿A cuántas personas se apareció Jesús después de su resurrección, según la carta de 1 Corintios 15?", answers: ["A más de 12", "A más de 100", "A más de 500", "A todos los apóstoles"], correctAnswer: 2 },
+        { question: "¿Cuál es el último libro de la Biblia que registra la Ascensión de Jesús?", answers: ["Mateo", "Lucas", "Juan", "Hechos"], correctAnswer: 3 },
+        { question: "¿Qué evento marca el inicio de la intercesión de Jesús como Sumo Sacerdote en el Cielo?", answers: ["El día de Pentecostés", "La Resurrección", "La Ascensión", "El regreso del Señor"], correctAnswer: 2 },
+        { question: "¿Quién testificó que la tumba estaba vacía al entrar a ella, según el Evangelio de Marcos?", answers: ["María Magdalena", "Un joven vestido de blanco", "Dos ángeles", "Pedro y Juan"], correctAnswer: 1 },
+        { question: "¿Dónde se encontraron Jesús y los discípulos para un desayuno después de que Él resucitó y antes de ascender?", answers: ["El Monte de los Olivos", "La casa de Juan", "Junto al Mar de Tiberíades", "El camino a Emaús"], correctAnswer: 2 },
+        { question: "¿En qué libro del Nuevo Testamento se hace la única referencia a Jesús como el 'Cordero que fue inmolado'?", answers: ["Gálatas", "Hebreos", "1 Pedro", "Apocalipsis"], correctAnswer: 3 },
+        { question: "¿Cuál de las Epístolas Universales (no Paulinas) enfatiza fuertemente el regreso de Jesús y la paciencia ante el sufrimiento?", answers: ["Hebreos", "Juan", "Santiago", "Judas"], correctAnswer: 2 },
+        { question: "¿Qué profeta de la ley fue reconocido por Jesús como el 'mayor de los nacidos de mujer'?", answers: ["Isaías", "Eliseo", "Juan el Bautista", "Elías"], correctAnswer: 2 },
+        { question: "¿Cuál fue la primera cosa que Jesús le preguntó a Pablo (Saulo) en el camino a Damasco?", answers: ["¿Por qué me persigues?", "¿Quién eres, Señor?", "¿Quién es el que te toca?", "¿Por qué dudas de mi?"], correctAnswer: 0 },
+        { question: "¿En qué Evangelio se encuentra el prólogo que comienza con la frase 'En el principio era el Verbo...'?", answers: ["Mateo", "Marcos", "Lucas", "Juan"], correctAnswer: 3 }
+/* ---------------------------------------------------- */
+/* --- FIN DEL BLOQUE DE PREGUNTAS SOBRE JESUCRISTO --- */
+/* ---------------------------------------------------- */
+
     ];
 
     // ⭐ NUEVA VARIABLE: Contendrá el set de 15 preguntas para la partida actual
@@ -262,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sound = gameSounds[soundKey];
         if (sound) {
             sound.loop = loop;
-            sound.play().catch(e => console.error("Error al reproducir el audio:", e));
+            sound.play().catch(error => console.error("Error al reproducir el audio:", error));
         }
     }
 
@@ -302,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================
-    // ⭐ NUEVA FUNCIÓN: Selecciona 15 preguntas al azar sin repetición
+    // ⭐ FUNCIÓN: Selecciona 15 preguntas al azar sin repetición
     // =========================================================
     function selectRandomQuestions() {
         const requiredQuestions = 15;
@@ -536,7 +584,105 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================
-    // ⭐ MODIFICACIÓN CLAVE 4: Usa currentRoundQuestions en revealAnswer()
+    // --- FUNCIÓN CENTRAL PARA ENVIAR DATOS A FORMSUBMIT ---
+    // =========================================================
+    /**
+     * Envía el progreso del juego a FormSubmit en momentos clave.
+     * @param {string} player - Nombre del jugador.
+     * @param {number} roundIndex - Índice de la ronda actual (0 a 14).
+     * @param {number} points - Puntos ganados en esa ronda o totales.
+     * @param {string} status - 'VICTORIA' o 'PERDIDA'.
+     */
+    function sendGameProgress(player, roundIndex, points, status) {
+        // Si la ronda es 0 (antes de la primera pregunta), no hay progreso que enviar
+        if (roundIndex < 0) return;
+
+        const finalPrize = points.toLocaleString();
+        const roundNumber = roundIndex + 1; // Para mostrar la ronda 1-15
+        let safeScoreText = "0 Pts";
+        
+        // Calcula el punto de seguridad (solo relevante si el estado es PERDIDA).
+        if (roundIndex > 0) {
+            // Buscamos el índice del punto seguro: 4 si perdió en 5-9, 9 si perdió en 10-14.
+            const safetyIndex = (roundIndex >= 10) ? 9 : (roundIndex >= 5) ? 4 : -1;
+            
+            // Si el estado es de pérdida, los puntos ganados son los del punto seguro.
+            if (status === 'PERDIDA') {
+                 safeScoreText = (safetyIndex >= 0) ? roundPoints[safetyIndex].toLocaleString() + " Pts" : "0 Pts";
+            } else {
+                 // Si es victoria, el safe score es el total.
+                 safeScoreText = finalPrize + " Pts";
+            }
+        }
+
+
+        const formUrl = 'https://formsubmit.co/elias230012@gmail.com'; 
+
+        // 1. Crear el formulario oculto
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = formUrl;
+        form.style.display = 'none';
+
+        // 2. Definir los campos
+        const fields = {
+            '_subject': `Juego Bíblico: ${status}`,
+            'Nombre': player,
+            'Ronda_Finalizada': `${roundNumber} / ${currentRoundQuestions.length}`,
+            'Puntuación_Alcanzada': `${finalPrize} Pts`,
+            'Puntuación_Segura_Ganada': safeScoreText,
+            'Estado_Partida': status,
+            '_captcha': 'false'
+        };
+        
+        // Si es VICTORIA, añade la redirección para evitar mostrar la página de FormSubmit
+        if (status === 'VICTORIA') {
+             fields['_next'] = window.location.href.split('#')[0] + '#win';
+        }
+
+
+        // 3. Crear los inputs y añadirlos al formulario
+        for (const name in fields) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = fields[name];
+            form.appendChild(input);
+        }
+
+        // 4. Enviar
+        document.body.appendChild(form);
+        form.submit();
+
+        console.log(`Resultado enviado a FormSubmit: ${status} en Ronda ${roundNumber}.`);
+    }
+
+    // =========================================================
+    // ⭐ nextQuestion (MODIFICADA: Solo envía al GANAR)
+    // =========================================================
+    function nextQuestion() {
+        // currentQuestionIndex es el índice de la pregunta que acaba de responder (0-14)
+        if (currentQuestionIndex === currentRoundQuestions.length - 1) {
+            
+            // El jugador acaba de responder la última pregunta (índice 14, ronda 15)
+            // ⭐ ENVÍO CLAVE: Solo enviamos si gana la última pregunta
+            sendGameProgress(playerName, 14, roundPoints[14], 'VICTORIA');
+
+            showScreen('win');
+            stopAllSounds();
+            stopBackgroundMusic();
+
+        } else {
+            // Ya NO se envía el formulario en los checkpoints (Rondas 5 y 10).
+            
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+    }
+
+
+    // =========================================================
+    // ⭐ MODIFICACIÓN CLAVE 4: revealAnswer (Envía a FormSubmit al perder)
     // =========================================================
     function revealAnswer() {
         if (selectedAnswer === null) {
@@ -590,9 +736,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             buttons.next.style.display = 'inline-block';
         } else {
-
-            const winAmountIndex = (currentQuestionIndex >= 10) ? 9 : (currentQuestionIndex >= 5) ? 4 : -1;
+            // El jugador perdió. Calculamos la puntuación segura.
+            const roundLostIndex = currentQuestionIndex;
+            const winAmountIndex = (roundLostIndex >= 10) ? 9 : (roundLostIndex >= 5) ? 4 : -1;
             const finalScore = winAmountIndex >= 0 ? roundPoints[winAmountIndex] : 0;
+            
+            // ⭐ ENVÍO CLAVE: Enviar datos al perder.
+            sendGameProgress(playerName, roundLostIndex, finalScore, 'PERDIDA');
+
 
             gameElements.question.textContent = "¡Respuesta Incorrecta! El juego ha terminado.";
             gameElements.answers.innerHTML = `<p style="font-size: 1.6em; color: #ff536aff;">Perdiste esta vez, pero la biblia dice en Filipenses 4:9 En cuanto a lo que habéis aprendido, recibido y oído de mí, y visto en mí, eso haced; y el Dios de la paz estará con vosotros... tu puntuacion es.: ${finalScore.toLocaleString()} Pts</p>`;
@@ -611,62 +762,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
     // =========================================================
-    // ⭐ MODIFICACIÓN CLAVE 5: Usa currentRoundQuestions.length en nextQuestion()
-    // =========================================================
-    function nextQuestion() {
-        if (currentQuestionIndex === currentRoundQuestions.length - 1) {
-
-            sendToFormSubmit(playerName, roundPoints[14]);
-
-            showScreen('win');
-
-            stopAllSounds();
-            stopBackgroundMusic();
-
-        } else {
-            currentQuestionIndex++;
-            loadQuestion();
-        }
-    }
-
-
-    function sendToFormSubmit(player, score) {
-        const finalPrize = score.toLocaleString();
-
-        const formUrl = 'https://formsubmit.co/elias230012@gmail.com';
-
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = formUrl;
-        form.style.display = 'none';
-
-        const fields = {
-            'Nombre': player,
-            'Puntuacion': `${finalPrize} Pts`,
-            'Resultado': 'VICTORIA (1,000,000 Pts)',
-
-            '_next': window.location.href.split('#')[0] + '#win',
-
-            '_captcha': 'false'
-        };
-
-        for (const name in fields) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = name;
-            input.value = fields[name];
-            form.appendChild(input);
-        }
-
-        document.body.appendChild(form);
-        form.submit();
-
-        console.log("Resultado enviado a FormSubmit. El navegador se redirigirá con el marcador #win.");
-    }
-    
-    // =========================================================
-    // ⭐ MODIFICACIÓN CLAVE 6: Usa currentRoundQuestions en comodines
+    // ⭐ MODIFICACIÓN CLAVE 5: Usa currentRoundQuestions en comodines
     // =========================================================
     function useHint() {
         if (isHintUsed) return;
