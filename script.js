@@ -583,7 +583,8 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedButton.classList.add('selected');
     }
 
-// --- FUNCIÓN CENTRAL PARA ENVIAR DATOS A FORMSUBMIT (AJUSTADA) ---
+// =========================================================
+// --- FUNCIÓN CENTRAL PARA ENVIAR DATOS A FORMSUBMIT (SOLUCIÓN FINAL) ---
 // =========================================================
 /**
  * Envía el progreso del juego a FormSubmit en momentos clave.
@@ -593,23 +594,18 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {string} status - 'VICTORIA' o 'PERDIDA'.
  */
 function sendGameProgress(player, roundIndex, points, status) {
-    // Si la ronda es 0 (antes de la primera pregunta), no hay progreso que enviar
     if (roundIndex < 0) return;
 
     const finalPrize = points.toLocaleString();
-    const roundNumber = roundIndex + 1; // Para mostrar la ronda 1-15
+    const roundNumber = roundIndex + 1;
     let safeScoreText = "0 Pts";
     
-    // Calcula el punto de seguridad (solo relevante si el estado es PERDIDA).
+    // ... (Lógica de puntuación segura, no necesita cambio)
     if (roundIndex > 0) {
-        // Buscamos el índice del punto seguro: 4 si perdió en 5-9, 9 si perdió en 10-14.
         const safetyIndex = (roundIndex >= 10) ? 9 : (roundIndex >= 5) ? 4 : -1;
-        
-        // Si el estado es de pérdida, los puntos ganados son los del punto seguro.
         if (status === 'PERDIDA') {
              safeScoreText = (safetyIndex >= 0) ? roundPoints[safetyIndex].toLocaleString() + " Pts" : "0 Pts";
         } else {
-             // Si es victoria, el safe score es el total.
              safeScoreText = finalPrize + " Pts";
         }
     }
@@ -617,13 +613,19 @@ function sendGameProgress(player, roundIndex, points, status) {
 
     const formUrl = 'https://formsubmit.co/elias230012@gmail.com'; 
 
-    // 1. Crear el formulario oculto
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = formUrl;
     form.style.display = 'none';
 
-    // 2. Definir los campos base
+    // 1. Definimos la URL de redirección
+    // Mantenemos la parte principal de la URL y si es Victoria, añadimos '#win'
+    const currentUrlBase = window.location.href.split('#')[0];
+    const nextUrl = (status === 'VICTORIA') 
+        ? currentUrlBase + '#win'
+        : currentUrlBase; // Redirige de vuelta a la página principal del juego.
+    
+    // 2. Definir los campos
     const fields = {
         '_subject': `Juego Bíblico: ${status}`,
         'Nombre': player,
@@ -631,18 +633,11 @@ function sendGameProgress(player, roundIndex, points, status) {
         'Puntuación_Alcanzada': `${finalPrize} Pts`,
         'Puntuación_Segura_Ganada': safeScoreText,
         'Estado_Partida': status,
-        '_captcha': 'false'
+        '_captcha': 'false',
+        // ⭐ CAMBIO CLAVE: Incluimos _next en todos los casos
+        '_next': nextUrl 
     };
     
-    // ⭐ AJUSTE CLAVE: Solo añadimos la redirección si GANA.
-    // Si pierde ('PERDIDA'), no incluimos '_next' para que FormSubmit
-    // muestre su página de confirmación, pero el jugador ya verá el
-    // mensaje de derrota en la pantalla del juego.
-    if (status === 'VICTORIA') {
-         fields['_next'] = window.location.href.split('#')[0] + '#win';
-    }
-
-
     // 3. Crear los inputs y añadirlos al formulario
     for (const name in fields) {
         const input = document.createElement('input');
@@ -656,7 +651,7 @@ function sendGameProgress(player, roundIndex, points, status) {
     document.body.appendChild(form);
     form.submit();
 
-    console.log(`Resultado enviado a FormSubmit: ${status} en Ronda ${roundNumber}.`);
+    console.log(`Resultado enviado a FormSubmit: ${status} en Ronda ${roundNumber}. Redireccionando a: ${nextUrl}`);
 }
 
     // =========================================================
