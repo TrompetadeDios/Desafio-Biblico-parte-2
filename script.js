@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
         start: new Audio('sounds/start_game.mp3')
     };
     
+    // ⭐ CLAVE AUDIO: Almacena todos los objetos Audio para desbloquearlos
+    const allGameSoundFiles = Object.values(gameSounds); 
+    let audioUnlocked = false; 
+    // ------------------------------------------------------------------
+
     const trackList = [
         'musica/pista-tecnologica-1.mp3',
         'musica/pista-tecnologica-2.mp3',
@@ -38,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         audience: document.getElementById('wildcard-audience'), 
         phone: document.getElementById('wildcard-call'), 
         
-        // NUEVO: Botón para minimizar/maximizar rondas
         toggleRounds: document.getElementById('toggle-rounds-btn'), 
         
         restartFail: document.getElementById('restart-fail-btn'),
@@ -52,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
         question: document.getElementById('question'),
         answers: document.getElementById('answer-options'),
         roundsList: document.getElementById('rounds-list'),
-        // NUEVO: Contenedor principal de rondas (para la clase 'minimized')
         roundsContainer: document.getElementById('rounds-container'), 
         audiencePoll: document.getElementById('audience-poll'),
         phoneTimer: document.getElementById('phone-timer'),
@@ -61,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
         winTitle: document.getElementById('win-title'),
         fireworksContainer: document.getElementById('fireworks-container'),
         rotatingCircle: document.getElementById('rotating-circle'),
-        // Elemento que se va a desvanecer en la pantalla de inicio
         startScreenContent: document.querySelector('#start-screen .screen-content')
     };
     
@@ -100,6 +102,27 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // =========================================================
+    // FUNCIÓN DE DESBLOQUEO DE AUDIO (CLAVE PARA REPRODUCIR SONIDOS)
+    // =========================================================
+    function unlockAudio() {
+        if (audioUnlocked) return;
+
+        // Intenta reproducir cada sonido con volumen 0 para que el navegador los "desbloquee"
+        allGameSoundFiles.forEach(sound => {
+            sound.volume = 0;
+            sound.play().then(() => {
+                sound.pause();
+                sound.currentTime = 0;
+                sound.volume = 1.0; // Restablecer el volumen a la normalidad
+                audioUnlocked = true;
+                console.log("Audio desbloqueado por interacción del usuario.");
+            }).catch(e => {
+                // Falla silenciosamente si el navegador sigue bloqueándolo
+            });
+        });
+    }
+    // =========================================================
+
     // FUNCIÓN TYPEWRITER
     // =========================================================
     function typeWriterEffect(element, text) {
@@ -129,6 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- FUNCIONES DE MANEJO DE AUDIO ---
     function playSound(soundKey, loop = false) {
+        if (!audioUnlocked) return; // No intentar si no está desbloqueado
+        
         stopAllSounds();
         const sound = gameSounds[soundKey];
         if (sound) {
@@ -173,8 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // =========================================================
-    // NUEVA FUNCIÓN: REINICIO Y CONFIGURACIÓN DEL ESTADO DEL JUEGO
-    // (Llamada desde startGame y desde botones de Reinicio)
+    // FUNCIÓN: REINICIO Y CONFIGURACIÓN DEL ESTADO DEL JUEGO
     // =========================================================
     function resetGameState() {
         currentQuestionIndex = 0;
@@ -183,13 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
         isHintUsed = false;
         selectedAnswer = null;
 
-        // Limpieza de intervalos/timers
         if (phoneTimerInterval !== null) {
             clearInterval(phoneTimerInterval);
             phoneTimerInterval = null;
         }
 
-        // Limpiar animaciones/clases de victoria
         if (gameElements.winTitle) {
             gameElements.winTitle.classList.remove('typewriter-anim');
             gameElements.winTitle.textContent = "";
@@ -198,12 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
             gameElements.finalScoreDisplay.classList.remove('visible');
         }
 
-        // Mostrar botones de comodín si están ocultos por 'used'
         if (buttons.hint) buttons.hint.classList.remove('used');
         if (buttons.audience) buttons.audience.classList.remove('used');
         if (buttons.phone) buttons.phone.classList.remove('used');
         
-        // Asegurar que el panel de rondas esté visible al inicio del juego
         if (gameElements.roundsContainer) {
              gameElements.roundsContainer.classList.remove('minimized');
              if (buttons.toggleRounds) buttons.toggleRounds.textContent = 'Ocultar Rondas ⬅️';
@@ -228,33 +248,28 @@ document.addEventListener('DOMContentLoaded', () => {
         resetGameState(); // Reinicia el estado del juego
         playSound('start'); // Sonido de inicio de juego
 
-        // Ejecutar el desvanecimiento de la pantalla de inicio
         if (gameElements.startScreenContent) {
             gameElements.startScreenContent.classList.add('fade-out');
             
             setTimeout(() => {
                 showScreen('game'); // Cambia a la pantalla de juego
                 loadQuestion();
-                // Retira el desvanecimiento para el siguiente ciclo
                 gameElements.startScreenContent.classList.remove('fade-out'); 
             }, 500); // 500ms coincide con la duración de la transición CSS
         } else {
-             // Fallback si no hay elemento de contenido
              showScreen('game');
              loadQuestion();
         }
     }
     
     // =========================================================
-    // NUEVA FUNCIÓN: MANEJO DEL BOTÓN OCULTAR/MOSTRAR RONDAS
+    // FUNCIÓN: MANEJO DEL BOTÓN OCULTAR/MOSTRAR RONDAS
     // =========================================================
     function toggleRounds() {
         if (!gameElements.roundsContainer || !buttons.toggleRounds) return;
         
-        // Alterna la clase 'minimized'
         gameElements.roundsContainer.classList.toggle('minimized');
         
-        // Cambia el texto del botón basado en el nuevo estado
         const isMinimized = gameElements.roundsContainer.classList.contains('minimized');
         buttons.toggleRounds.textContent = isMinimized ? 'Mostrar Rondas ➡️' : 'Ocultar Rondas ⬅️';
     }
@@ -284,8 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentRoundLi = gameElements.roundsList.querySelector(`li[data-round="${currentQuestionIndex}"]`);
         if (currentRoundLi) {
             currentRoundLi.classList.add('current-round');
-            // Desplazar la vista para que la ronda actual sea visible (útil en móvil)
-             currentRoundLi.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            currentRoundLi.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     }
 
@@ -327,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(isPhoneUsed) buttons.phone.classList.add('used'); else buttons.phone.classList.remove('used');
         }
 
-        // 🔊 Reproducir música de suspenso
+        // 🔊 Reproducir música de suspenso (Solo si el audio está desbloqueado)
         playSound('suspense', true); 
     
         const currentQuestion = questions[currentQuestionIndex];
@@ -386,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let isCorrect = (selectedAnswer === correctIndex);
 
-        // 🔊 Lógica de Sonido
+        // 🔊 Lógica de Sonido (Solo si el audio está desbloqueado)
         if (isCorrect) {
             playSound('correct'); 
         } else {
@@ -466,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (buttons.backToStartWin) buttons.backToStartWin.style.display = 'none';
             }
             
-            // Envía el resultado a FormSubmit
+            // ⭐ CLAVE FORMSUBMIT: Llamada a la nueva función de envío
             sendToFormSubmit(playerName, roundPoints[14]);
 
             // Secuencia de animación de victoria
@@ -486,35 +500,48 @@ document.addEventListener('DOMContentLoaded', () => {
     } 
 
     // =========================================================
-    // NUEVA FUNCIÓN: ENVÍO DE DATOS A FORMSUBMIT
+    // ⭐ CLAVE FORMSUBMIT: NUEVA FUNCIÓN QUE SIMULA UN FORMULARIO HTML
+    // (Esto resuelve el problema de envío y validación)
     // =========================================================
-    function sendToFormSubmit(player, score) {
-        const formData = new FormData();
-        formData.append('Nombre', player);
-        formData.append('Puntuacion', `${score.toLocaleString()} Pts`);
-        formData.append('Resultado', 'VICTORIA (1,000,000 Pts)');
+  function sendToFormSubmit(player, score) {
+    const finalPrize = score.toLocaleString();
+    
+    // ⭐ CAMBIO CLAVE: Usa tu dirección de correo electrónico real en la URL
+    const formUrl = 'https://formsubmit.co/elias230012@gmail.com'; 
 
-        // !!! IMPORTANTE: REEMPLAZA ESTO CON TU URL DE FORMULARIO DE FORMSSUBMIT !!!
-        const formUrl = 'https://formsubmit.co/el/gehali'; 
+    // 1. Crea el formulario en memoria
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = formUrl;
+    form.style.display = 'none'; // Ocultar el formulario
 
-        fetch(formUrl, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                console.log("Resultado enviado exitosamente a FormSubmit.");
-            } else {
-                console.error("Error al enviar el resultado a FormSubmit.");
-            }
-        })
-        .catch(error => {
-            console.error("Error de red al intentar enviar el formulario:", error);
-        });
+    // 2. Define y agrega TODOS los campos
+    const fields = {
+        'Nombre': player,
+        'Puntuacion': `${finalPrize} Pts`,
+        'Resultado': 'VICTORIA (1,000,000 Pts)',
+        
+        // Para redirigir al jugador de vuelta a la URL actual
+        '_next': window.location.href, 
+        
+        // Deshabilita el reCAPTCHA automático
+        '_captcha': 'false' 
+    };
+
+    for (const name in fields) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = fields[name];
+        form.appendChild(input);
     }
+    
+    // 3. Agrega el formulario al documento y envíalo
+    document.body.appendChild(form);
+    form.submit();
+    
+    console.log("Resultado enviado a FormSubmit con tu correo verificado. Se intenta la redirección de vuelta.");
+}
     // =========================================================
 
 
@@ -631,11 +658,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- EVENT LISTENERS (MANEJO DE CLICKS) ---
 
-    // CLAVE: Usa el nuevo flujo startGame con el desvanecimiento
-    if (buttons.start) buttons.start.addEventListener('click', startGame);
-    if (buttons.startFromRules) buttons.startFromRules.addEventListener('click', startGame);
+    // ⭐ CLAVE AUDIO: Llama a unlockAudio() en la interacción de inicio
+    if (buttons.start) buttons.start.addEventListener('click', () => { 
+        unlockAudio();
+        startGame(); 
+    });
+    if (buttons.startFromRules) buttons.startFromRules.addEventListener('click', () => { 
+        unlockAudio();
+        startGame(); 
+    });
     
-    // NUEVO: Listener para alternar el panel de rondas
     if (buttons.toggleRounds) buttons.toggleRounds.addEventListener('click', toggleRounds); 
     
     if (buttons.showRules) buttons.showRules.addEventListener('click', () => { 
@@ -655,14 +687,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listener para el botón de Reinicio (dentro del juego)
     if (buttons.restartFail) buttons.restartFail.addEventListener('click', () => {
-        startGame(); // Llama a startGame que se encarga de resetear y cargar la primera pregunta
+        startGame(); 
         buttons.restartFail.style.display = 'none'; 
         if (buttons.backToStartFail) buttons.backToStartFail.style.display = 'none'; 
     });
 
     // LISTENER PARA EL BOTÓN DE VOLVER A INICIO (después de Fallar)
     if (buttons.backToStartFail) buttons.backToStartFail.addEventListener('click', () => {
-        resetGameState(); // Reinicia el estado
+        resetGameState(); 
         showScreen('start');
         startBackgroundMusic(); 
         
