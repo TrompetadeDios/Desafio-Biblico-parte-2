@@ -152,7 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- FUNCIONES DE MANEJO DE AUDIO ---
     function playSound(soundKey, loop = false) {
-        if (!audioUnlocked) return; // No intentar si no está desbloqueado
+        // ⭐ Mejoramos el control: Si no está desbloqueado, no intentamos reproducir
+        if (!audioUnlocked && soundKey !== 'win') return; 
         
         stopAllSounds();
         const sound = gameSounds[soundKey];
@@ -233,6 +234,54 @@ document.addEventListener('DOMContentLoaded', () => {
         stopAllSounds();
     }
     // =========================================================
+    
+    // =========================================================
+    // ⭐ NUEVA FUNCIÓN: Manejo de la pantalla final de VICTORIA (Centralizada)
+    // =========================================================
+    function showFinalScreen() {
+        resetGameState();
+        stopBackgroundMusic();
+        
+        showScreen('win'); 
+        
+        // ⭐ CLAVE AUDIO: Intentamos reproducir el sonido de victoria. 
+        // Si ya hubo un clic, debería funcionar.
+        playSound('win'); 
+        
+        const winText = "¡FELICIDADES!";
+        const finalPrize = roundPoints[14].toLocaleString();
+        
+        if (gameElements.winTitle) {
+            typeWriterEffect(gameElements.winTitle, winText);
+        }
+        if (gameElements.fireworksContainer) {
+             gameElements.fireworksContainer.classList.remove('hidden'); 
+        }
+        if (gameElements.rotatingCircle) {
+             gameElements.rotatingCircle.classList.remove('hidden'); 
+        }
+        
+        // Secuencia de animación de victoria (misma que ya tenías)
+        setTimeout(() => {
+            if (gameElements.finalScoreDisplay) {
+                gameElements.finalScoreDisplay.textContent = `¡Has ganado el gran premio de ${finalPrize} Pts, ${playerName}!`;
+                gameElements.finalScoreDisplay.classList.add('visible');
+            }
+        }, 1500); // 1.5s para un efecto más rápido
+        
+        setTimeout(() => {
+            if(buttons.restartWin) buttons.restartWin.style.display = 'inline-block';
+            if(buttons.backToStartWin) buttons.backToStartWin.style.display = 'inline-block';
+        }, 2500); // 2.5s para que aparezcan los botones
+        
+        // Ocultamos los botones al cargar la pantalla por redirección
+        if (buttons.restartWin) buttons.restartWin.style.display = 'none';
+        if (buttons.backToStartWin) buttons.backToStartWin.style.display = 'none';
+
+        // ⭐ CLAVE: Limpiar el hash después de mostrar la pantalla para que no se repita
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+    }
+    // =========================================================
 
     // --- FUNCIÓN DE INICIO DE JUEGO OPTIMIZADA ---
     function startGame() {
@@ -257,8 +306,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameElements.startScreenContent.classList.remove('fade-out'); 
             }, 500); // 500ms coincide con la duración de la transición CSS
         } else {
-             showScreen('game');
-             loadQuestion();
+            showScreen('game');
+            loadQuestion();
         }
     }
     
@@ -453,45 +502,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function nextQuestion() {
         if (currentQuestionIndex === questions.length - 1) {
             
-            stopAllSounds(); 
-            playSound('win'); 
-            stopBackgroundMusic(); 
+            // ⭐ CLAVE FORMSUBMIT: Llamada a la función de envío, que ahora incluye #win
+            sendToFormSubmit(playerName, roundPoints[14]);
             
+            // NOTA: EL CÓDIGO DE VICTORIA Y ANIMACIÓN SE EJECUTARÁ DESPUÉS DE LA REDIRECCIÓN
+            // POR LO TANTO, EL showScreen('win') AQUÍ YA NO ES NECESARIO.
+            
+            // Para asegurar que el jugador vea algo antes de la redirección, puedes dejar esto:
             showScreen('win'); 
             
-            const winText = "¡FELICIDADES!";
-            if (gameElements.winTitle) {
-                typeWriterEffect(gameElements.winTitle, winText);
-            }
-            
-            if (gameElements.fireworksContainer) {
-                 gameElements.fireworksContainer.classList.remove('hidden'); 
-            }
-            if (gameElements.rotatingCircle) {
-                 gameElements.rotatingCircle.classList.remove('hidden'); 
-            }
-
-            const finalPrize = roundPoints[14].toLocaleString();
-            
-            if (gameElements.finalScoreDisplay) {
-                gameElements.finalScoreDisplay.textContent = `¡Has ganado el gran premio de ${finalPrize} Pts, ${playerName}!`;
-                gameElements.finalScoreDisplay.classList.remove('visible'); 
-                if (buttons.restartWin) buttons.restartWin.style.display = 'none';
-                if (buttons.backToStartWin) buttons.backToStartWin.style.display = 'none';
-            }
-            
-            // ⭐ CLAVE FORMSUBMIT: Llamada a la nueva función de envío
-            sendToFormSubmit(playerName, roundPoints[14]);
-
-            // Secuencia de animación de victoria
-            setTimeout(() => {
-                if(gameElements.finalScoreDisplay) gameElements.finalScoreDisplay.classList.add('visible');
-            }, 3000); 
-
-            setTimeout(() => {
-                if(buttons.restartWin) buttons.restartWin.style.display = 'inline-block';
-                if(buttons.backToStartWin) buttons.backToStartWin.style.display = 'inline-block';
-            }, 4000);
+            // Ya que el navegador se va a recargar, detenemos todo.
+            stopAllSounds(); 
+            stopBackgroundMusic(); 
             
         } else {
             currentQuestionIndex++;
@@ -500,48 +522,48 @@ document.addEventListener('DOMContentLoaded', () => {
     } 
 
     // =========================================================
-    // ⭐ CLAVE FORMSUBMIT: NUEVA FUNCIÓN QUE SIMULA UN FORMULARIO HTML
-    // (Esto resuelve el problema de envío y validación)
+    // ⭐ CLAVE FORMSUBMIT: NUEVA FUNCIÓN CON REDIRECCIÓN #win
     // =========================================================
-  function sendToFormSubmit(player, score) {
-    const finalPrize = score.toLocaleString();
-    
-    // ⭐ CAMBIO CLAVE: Usa tu dirección de correo electrónico real en la URL
-    const formUrl = 'https://formsubmit.co/elias230012@gmail.com'; 
-
-    // 1. Crea el formulario en memoria
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = formUrl;
-    form.style.display = 'none'; // Ocultar el formulario
-
-    // 2. Define y agrega TODOS los campos
-    const fields = {
-        'Nombre': player,
-        'Puntuacion': `${finalPrize} Pts`,
-        'Resultado': 'VICTORIA (1,000,000 Pts)',
+    function sendToFormSubmit(player, score) {
+        const finalPrize = score.toLocaleString();
         
-        // Para redirigir al jugador de vuelta a la URL actual
-        '_next': window.location.href, 
-        
-        // Deshabilita el reCAPTCHA automático
-        '_captcha': 'false' 
-    };
+        // Tu correo real
+        const formUrl = 'https://formsubmit.co/elias230012@gmail.com'; 
 
-    for (const name in fields) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = fields[name];
-        form.appendChild(input);
+        // 1. Crea el formulario en memoria
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = formUrl;
+        form.style.display = 'none'; 
+
+        // 2. Define y agrega TODOS los campos
+        const fields = {
+            'Nombre': player,
+            'Puntuacion': `${finalPrize} Pts`,
+            'Resultado': 'VICTORIA (1,000,000 Pts)',
+            
+            // ⭐ CAMBIO CLAVE: Agregamos #win a la URL de redirección
+            // Usamos split('#')[0] para limpiar cualquier hash anterior
+            '_next': window.location.href.split('#')[0] + '#win', 
+            
+            // Deshabilita el reCAPTCHA automático
+            '_captcha': 'false' 
+        };
+
+        for (const name in fields) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = fields[name];
+            form.appendChild(input);
+        }
+        
+        // 3. Agrega el formulario al documento y envíalo
+        document.body.appendChild(form);
+        form.submit();
+        
+        console.log("Resultado enviado a FormSubmit. El navegador se redirigirá con el marcador #win.");
     }
-    
-    // 3. Agrega el formulario al documento y envíalo
-    document.body.appendChild(form);
-    form.submit();
-    
-    console.log("Resultado enviado a FormSubmit con tu correo verificado. Se intenta la redirección de vuelta.");
-}
     // =========================================================
 
 
@@ -713,8 +735,33 @@ document.addEventListener('DOMContentLoaded', () => {
         startBackgroundMusic(); 
     });
 
-    // --- INICIALIZACIÓN DEL JUEGO ---
+    // =========================================================
+    // ⭐ BLOQUE DE INICIALIZACIÓN Y DETECCIÓN DEL MARCADOR #win
+    // =========================================================
     generateRoundsList();
-    showScreen('start');
-    startBackgroundMusic(); 
+
+    const hash = window.location.hash;
+
+    if (hash === '#win') {
+        // ⭐ Si hay #win, asumimos que hubo un clic inicial (para desbloquear el audio)
+        // y saltamos directo a la pantalla de victoria.
+        audioUnlocked = true; // Forzamos el desbloqueo (depende de la política del navegador)
+        
+        // El nombre del jugador no se guardó tras la redirección. 
+        // Asignaremos un valor por defecto o podemos intentar recuperarlo si usas localStorage,
+        // pero por ahora, usamos uno genérico para que no falle.
+        playerName = 'Campeón';
+        
+        // Usamos un pequeño retraso para que el navegador termine de cargar todos los elementos
+        // antes de intentar reproducir el audio y la animación de victoria.
+        setTimeout(() => {
+            showFinalScreen();
+        }, 100); 
+
+    } else {
+        // Carga normal: muestra la pantalla de inicio
+        showScreen('start');
+        startBackgroundMusic(); 
+    }
+    // =========================================================
 });
