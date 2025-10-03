@@ -9,11 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const gameSounds = {
-        correct: new Audio('Sounds/correct.mp3'),
-        wrong: new Audio('Sounds/wrong.mp3'),
-        suspense: new Audio('Sounds/suspense.mp3'),
-        win: new Audio('Sounds/win.mp3'),
-        start: new Audio('Sounds/start_game.mp3')
+        correct: new Audio('sounds/correct.mp3'),
+        wrong: new Audio('sounds/wrong.mp3'),
+        suspense: new Audio('sounds/suspense.mp3'),
+        win: new Audio('sounds/win.mp3'),
+        start: new Audio('sounds/start_game.mp3')
     };
     
     // ⭐ CLAVE AUDIO: Almacena todos los objetos Audio para desbloquearlos
