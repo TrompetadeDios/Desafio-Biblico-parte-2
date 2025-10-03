@@ -1,4 +1,3 @@
-/* --- ESTILOS GENERALES Y DE FONDO --- */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
@@ -7,17 +6,16 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     color: white;
-    overflow: hidden; /* Evita barras de scroll en el body, la gestión se hace en los contenedores */
+    overflow: hidden; 
 }
 
-/* --- ESTILOS DE PANTALLAS (INICIO, REGLAS, JUEGO, VICTORIA) --- */
 .screen {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
-    display: none; /* Ocultas por defecto */
+    display: none; 
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -31,32 +29,30 @@ body {
 }
 
 .screen.active {
-    display: flex; /* Muestra la pantalla activa */
+    display: flex; 
 }
 
-/* --- ESTILOS DE TRANSICIÓN Y FADE-OUT (NUEVO) --- */
 .fade-target {
-    /* Asegura que la opacidad y la posición se puedan animar suavemente */
+
     transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
-/* Clase añadida por JavaScript para ejecutar el desvanecimiento */
+
 .fade-out {
     opacity: 0 !important; 
-    transform: translateY(-20px); /* Mover hacia arriba ligeramente al desvanecer */
-    pointer-events: none; /* Desactiva la interacción mientras se desvanece */
+    transform: translateY(-20px); 
+    pointer-events: none; 
 }
-/* --- FIN DE ESTILOS DE TRANSICIÓN --- */
 
-/* --- MODIFICACIÓN 1: Fondo Degradado Animado para Pantalla de Inicio (Inmersivo) --- */
+
 #start-screen.active {
-    /* Fondo con colores cian/morado para un look moderno */
+   
     background: linear-gradient(-45deg, #a006c7, #348cff, #e937e9, #0f2027);
     background-size: 400% 400%; 
     animation: GradientAnimation 15s ease infinite; 
 }
 
-/* Define los pasos clave de la animación (keyframes) */
+
 @keyframes GradientAnimation {
     0% {
         background-position: 0% 50%;
@@ -71,19 +67,19 @@ body {
 
 .screen-content {
     padding: 20px;
-    z-index: 10; /* Asegura que el contenido esté sobre el círculo y los destellos */
+    z-index: 10; 
 }
 
-/* --- MODIFICACIÓN 2: Efecto Neón para Títulos --- */
+
 h1 {
     font-size: 3.5em;
-    /* Efecto neón/brillo en blanco/ciano */
+
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 
                  0 0 20px rgba(0, 255, 255, 0.6); 
     color: white;
 }
 
-/* --- ESTILOS PARA EL CAMPO DE NOMBRE (REVISADO) --- */
+
 .input-group {
     margin: 20px 0;
     text-align: center;
@@ -116,9 +112,7 @@ h1 {
     box-shadow: 0 0 15px #ffc107; 
     background-color: #1a1a5c;
 }
-/* --- FIN DE ESTILOS DE CAMPO DE NOMBRE --- */
 
-/* Estilos para la caja de reglas */
 .rules-box {
     background-color: rgba(26, 26, 92, 0.9);
     border: 2px solid #5a5ac7;
@@ -137,7 +131,7 @@ h1 {
     list-style: disc;
 }
 
-/* --- ESTILOS DE BOTONES --- */
+
 .button-container {
     margin-top: 30px;
 }
@@ -155,48 +149,46 @@ h1 {
     font-weight: bold;
 }
 
-/* Aplicamos el efecto Neón al hover del botón, solo si es un botón de inicio/reglas */
+
 #start-screen .btn, #rules-screen .btn {
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); /* Sombra base de neón amarillo */
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); 
     background-color: #ffc107;
 }
 
 #start-screen .btn:hover, #rules-screen .btn:hover {
     background-color: #ffda6a;
     transform: scale(1.05);
-    /* Aumento de brillo al hacer hover */
+   
     box-shadow: 0 0 15px #ffc107, 0 0 40px rgba(255, 193, 7, 0.8);
 }
 
-/* Estilos de botones de juego (sin neón, manteniendo la estética de la app) */
+
 #reveal-btn:hover, #next-btn:hover {
     background-color: #ffda6a;
     transform: scale(1.05);
 }
 
-/* --- ESTILOS DE LA PANTALLA DE JUEGO (FONDO Y CONTENEDORES) --- */
+
 #game-screen {
     flex-direction: row;
     justify-content: space-around;
     align-items: flex-start;
     padding-top: 50px;
     
-    /* MODIFICACIÓN: Fondo Oscuro con Degradado Fijo (Más sutil) */
+   
     background: linear-gradient(135deg, #7e1dda 0%, #1f7af1 70%, #6523fd 100%);
     background-size: cover;
     background-color: rgba(11, 12, 58, 0.95);
 }
 
-/* -------------------------------------------------------------------- */
-/* --- ESTILOS ADICIONALES PARA OCULTAR/MOSTRAR RONDAS (MODIFICADO) --- */
-/* -------------------------------------------------------------------- */
+
 #rounds-container {
-    /* Agregamos una transición para que el movimiento sea suave */
+    
     transition: transform 0.4s ease-in-out, width 0.4s ease-in-out; 
-    /* Permitimos que el botón quede fuera del área del contenedor sin ser cortado */
+    
     overflow: visible; 
     
-    /* Mantenemos tus estilos existentes: */
+    
     background-color: rgba(11, 12, 58, 0.8);
     padding: 20px;
     border-radius: 15px;
@@ -206,31 +198,29 @@ h1 {
     overflow-y: auto;
 }
 
-/* CLASE CLAVE: ESTILO DE ESCRITORIO (Deslizamiento fuera de vista) */
 #rounds-container.minimized {
-    /* Mueve el panel hacia la izquierda, ocultándolo de la vista */
-    transform: translateX(-280px); /* 250px de ancho + un pequeño margen */
+  
+    transform: translateX(-280px); 
 }
 
-/* Ocultamos el contenido (lista y título) cuando el contenedor está minimizado */
+
 #rounds-container.minimized #rounds-content {
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease-out; /* Transición rápida de salida */
+    transition: opacity 0.2s ease-out; 
 }
 
-/* Estilo del botón de alternar visibilidad */
+
 #toggle-rounds-btn {
     padding: 8px 15px; 
     font-size: 0.9em;
     margin-bottom: 15px;
-    background-color: #348cff; /* Color diferente para destacarlo */
+    background-color: #348cff; 
     color: white;
     border-radius: 5px;
     border: none;
     box-shadow: 0 0 5px rgba(52, 140, 255, 0.5);
     transition: background-color 0.3s;
-    /* Colocamos el botón al inicio del contenedor */
     display: block; 
 }
 
@@ -238,18 +228,15 @@ h1 {
     background-color: #5a9fff;
 }
 
-/* Aseguramos que el contenido real de rondas se ajuste a la animación */
+
 #rounds-content {
     transition: opacity 0.3s ease-in-out;
 }
 
-/* Ajusta el margen del h2 para evitar que el contenido se mueva mucho al ocultar el h2*/
 #rounds-content h2 {
     margin-top: 0;
 }
-/* -------------------------------------------------------------------- */
-/* --- FIN ESTILOS OCULTAR/MOSTRAR RONDAS --- */
-/* -------------------------------------------------------------------- */
+
 
 
 #rounds-list {
@@ -269,24 +256,22 @@ h1 {
     transition: background-color 0.3s;
 }
 
-/* Estilo para la ronda actual */
 #rounds-list li.current-round {
     background-color: #ffa500;
     color: #0b0c3a;
     font-weight: bold;
 }
 
-/* Contenedor principal del juego (pregunta y respuestas) */
+
 .game-container {
     width: 60%;
     max-width: 800px;
-    /* MODIFICACIÓN: Glassmorphism y Brillo Sutil */
     background-color: rgba(26, 26, 92, 0.7); 
-    backdrop-filter: blur(5px); /* Efecto cristal */
+    backdrop-filter: blur(5px); 
     border-radius: 15px;
     padding: 25px;
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.1); /* Brillo cian sutil */
-    border: 1px solid rgba(0, 255, 255, 0.2); /* Borde delgado y brillante */
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.1); 
+    border: 1px solid rgba(0, 255, 255, 0.2); 
     text-align: center;
 }
 
@@ -315,14 +300,13 @@ h1 {
     padding: 15px;
     font-size: 1.1em;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s; /* Asegura transición para animación */
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s; 
 }
 
 .answer-btn:hover {
     background-color: #3e3e9e;
 }
 
-/* --- Animación de pulsación al seleccionar respuesta --- */
 .answer-btn.selected {
     background-color: #ffa500;
     border-color: #ffc966;
@@ -340,7 +324,7 @@ h1 {
         box-shadow: 0 0 15px rgba(255, 165, 0, 1);
     }
 }
-/* -------------------------------------------------------------------- */
+
 
 
 .answer-btn.correct {
@@ -354,10 +338,10 @@ h1 {
 }
 
 #next-btn {
-    display: none; /* Oculto por defecto */
+    display: none; 
 }
 
-/* --- ESTILOS DE COMODINES --- */
+
 #wildcards-container {
     display: flex;
     justify-content: center;
@@ -369,12 +353,11 @@ h1 {
     background-color: #2c2c8d;
     color: white;
     border: 2px solid #5a5ac7;
-    border-radius: 50%; /* Botones redondos */
+    border-radius: 50%; 
     width: 80px;
     height: 80px;
     font-size: 0.8em;
     cursor: pointer;
-    /* MODIFICACIÓN: Transición para la animación de salida */
     transition: all 0.5s ease-out; 
     display: flex;
     flex-direction: column;
@@ -389,19 +372,16 @@ h1 {
 }
 
 .wildcard-btn i {
-    font-size: 1.5em; /* Tamaño del ícono */
+    font-size: 1.5em; 
 }
 
-/* --- Animación de Salida para Comodín Usado --- */
 .wildcard-btn.used {
     opacity: 0;
     pointer-events: none;
-    transform: scale(0.5) rotate(90deg); /* Se encoge y rota al desaparecer */
+    transform: scale(0.5) rotate(90deg); 
 }
-/* -------------------------------------------------------- */
 
 
-/* --- ESTILOS DE GRÁFICA DE AUDIENCIA --- */
 #audience-poll {
     display: flex;
     justify-content: space-around;
@@ -432,7 +412,6 @@ h1 {
     padding-bottom: 5px;
 }
 
-/* --- ESTILOS DEL TEMPORIZADOR --- */
 #phone-timer {
     font-size: 2em;
     font-weight: bold;
@@ -440,9 +419,8 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* --- Animación de parpadeo de urgencia --- */
 .timer-urgent {
-    color: #dc3545; /* Rojo */
+    color: #dc3545; 
     animation: blink 0.5s steps(1, start) infinite;
 }
 
@@ -451,7 +429,6 @@ h1 {
         opacity: 0;
     }
 }
-/* ---------------------------------------------------- */
 
 
 .restart-btn-fail {
@@ -470,14 +447,14 @@ h1 {
 }
 
 .back-to-start-fail-btn {
-    background-color: #007bff; /* Azul estándar */
+    background-color: #007bff; 
     color: white;
     padding: 10px 20px;
     border: 2px solid #0056b3;
     border-radius: 5px;
     font-size: 1.2em;
     cursor: pointer;
-    margin-left: 10px; /* Separación del botón de Reinicio */
+    margin-left: 10px; 
     transition: background-color 0.3s;
 }
 
@@ -485,40 +462,32 @@ h1 {
     background-color: #0056b3;
 }
 
-/* ========================================================= */
-/* --- NUEVOS ESTILOS PARA LA PANTALLA DE VICTORIA (#win-screen) --- */
-/* ========================================================= */
 
 #win-screen {
-    /* Fondo muy oscuro o negro para que los efectos de luz resalten */
+
     background-color: #000000; 
-    
-    /* MODIFICACIÓN: Efecto de fondo de partículas o estrellas */
     background-image: radial-gradient(circle, #0b0c3a 1px, transparent 0); 
     background-size: 40px 40px; 
-    
-    /* Brillo constante y centelleante para dar sensación de triunfo */
     animation: background-pulse 4s infinite alternate;
-    position: relative; /* Necesario para posicionar los elementos hijos */
+    position: relative; 
 }
 
-/* Animación de pulso para el fondo de victoria */
+
 @keyframes background-pulse {
     0% {
-        box-shadow: inset 0 0 50px rgba(0, 174, 255, 0.2); /* Sutil cian */
+        box-shadow: inset 0 0 50px rgba(0, 174, 255, 0.2); 
     }
     100% {
-        box-shadow: inset 0 0 150px rgba(140, 0, 255, 0.82); /* Intenso morado */
+        box-shadow: inset 0 0 150px rgba(140, 0, 255, 0.82); 
     }
 }
 
 #win-screen h1 {
-    /* Estilo de título más dramático */
-    font-size: 5em !important; /* Importante para sobrescribir el h1 general */
-    text-shadow: 0 0 20px #8f05ff, /* Neón morado principal */
-                 0 0 40px #ff00c8, /* Tono magenta */
-                 0 0 60px #00a2ff; /* Tono azul/cian */
-    /* Animación de destello suave */
+   
+    font-size: 5em !important; 
+    text-shadow: 0 0 20px #8f05ff, 
+                 0 0 40px #ff00c8, 
+                 0 0 60px #00a2ff; 
     animation: neon-flicker 1.5s infinite alternate; 
     font-weight: 900;
 }
@@ -533,13 +502,12 @@ h1 {
 }
 
 #final-score-display {
-    color: #ffd700; /* Oro */
+    color: #ffd700; 
     font-weight: bold;
-    font-size: 2em !important; /* Asegura el tamaño de la fuente */
-    /* Efecto 3D y brillo */
+    font-size: 2em !important; 
     text-shadow: 0 4px 4px rgba(0, 0, 0, 0.5), 
                  0 0 10px rgba(255, 215, 0, 0.8);
-    opacity: 0; /* Oculto inicialmente, se mostrará con la clase .visible del JS */
+    opacity: 0; 
     transition: opacity 0.8s ease-in;
 }
 
@@ -547,30 +515,23 @@ h1 {
     opacity: 1;
 }
 
-/* ---------------------------------------------------- */
-/* --- NUEVO: CÍRCULO GIRATORIO CENTRAL --- */
-/* ---------------------------------------------------- */
 #rotating-circle {
     position: absolute;
     top: 50%;
     left: 50%;
-    /* Ajusta el tamaño al gusto */
     width: 300px; 
     height: 300px;
-    /* Mueve el centro del elemento al centro de la pantalla */
     transform: translate(-50%, -50%); 
     border-radius: 50%;
     box-shadow: 0 0 30px #00a2ff, inset 0 0 30px #ff00c8;
-    z-index: 5; /* Detrás del mensaje pero delante del fondo */
-    
-    /* Degradado del borde para simular energía */
+    z-index: 5; 
     border: 5px solid transparent; 
     background-image: linear-gradient(#000000, #000000), 
                       linear-gradient(to right, #00a2ff, #ff00c8);
     background-origin: border-box;
     background-clip: content-box, border-box;
     
-    /* Animación de giro */
+
     animation: spin 8s linear infinite;
 }
 
@@ -583,20 +544,16 @@ h1 {
     }
 }
 
-/* ---------------------------------------------------- */
-/* --- NUEVO: DESTELLEOS TIPO FUEGOS ARTIFICIALES (ESTÁTICOS) --- */
-/* ---------------------------------------------------- */
 #fireworks-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; /* Detrás de todo el contenido */
+    z-index: 1; 
     overflow: hidden;
 }
 
-/* Crea 20 destellos de diferentes colores y tamaños */
 @keyframes twinkle {
     0% {
         opacity: 0.2;
@@ -612,17 +569,13 @@ h1 {
     }
 }
 
-/* ---------------------------------------------------- */
-/* --- INYECCIÓN DE ESTRELLAS CSS PURO --- */
-/* ---------------------------------------------------- */
 .star {
     position: absolute;
     border-radius: 50%;
-    background-color: white; /* Color base */
+    background-color: white; 
     box-shadow: 0 0 5px #fff, 0 0 10px #ff00c8, 0 0 15px #00a2ff;
 }
 
-/* Estrellas Estáticas Manuales (para simular los fuegos artificiales estáticos) */
 .star:nth-child(1) { top: 10%; left: 80%; width: 2px; height: 2px; animation: twinkle 3s infinite alternate; }
 .star:nth-child(2) { top: 35%; left: 15%; width: 3px; height: 3px; animation: twinkle 4.5s infinite alternate; animation-delay: 0.5s; }
 .star:nth-child(3) { top: 60%; left: 90%; width: 1px; height: 1px; animation: twinkle 3.8s infinite alternate; animation-delay: 1s; }
@@ -633,7 +586,7 @@ h1 {
 .star:nth-child(8) { top: 55%; left: 25%; width: 2px; height: 2px; animation: twinkle 4.8s infinite alternate; animation-delay: 0.8s; }
 .star:nth-child(9) { top: 90%; left: 60%; width: 3px; height: 3px; animation: twinkle 3.4s infinite alternate; animation-delay: 0.1s; }
 .star:nth-child(10) { top: 15%; left: 60%; width: 2px; height: 2px; animation: twinkle 4.2s infinite alternate; animation-delay: 1.8s; }
-/* Añadir más destellos para una mejor cobertura */
+
 .star:nth-child(11) { top: 45%; left: 85%; width: 1px; height: 1px; animation: twinkle 3.1s infinite alternate; animation-delay: 0.3s; }
 .star:nth-child(12) { top: 75%; left: 10%; width: 2px; height: 2px; animation: twinkle 5.5s infinite alternate; animation-delay: 1.9s; }
 .star:nth-child(13) { top: 25%; left: 95%; width: 3px; height: 3px; animation: twinkle 3.7s infinite alternate; animation-delay: 0.7s; }
@@ -646,52 +599,40 @@ h1 {
 .star:nth-child(20) { top: 70%; left: 30%; width: 1px; height: 1px; animation: twinkle 5.1s infinite alternate; animation-delay: 2.1s; }
 
 
-/* ========================================================= */
-/* --- MODIFICACIÓN CLAVE: ANIMACIÓN TYPEWRITER (CSS PURO) --- */
-/* ========================================================= */
 
 #win-title {
-    /* CLAVE: Estilos iniciales para el efecto */
-    white-space: nowrap; /* Asegura que el texto permanezca en una sola línea */
-    overflow: hidden; /* Oculta el texto que excede el width */
-    width: 0; /* Inicialmente, el ancho es 0 (texto oculto) */
-    border-right: 0.15em solid white; /* Simula el cursor de la máquina de escribir */
-    /* La transición del width NO debe ser suave, debe ser por pasos */
+    white-space: nowrap; 
+    overflow: hidden; 
+    width: 0; 
+    border-right: 0.15em solid white; 
+    
 }
 
-/* Clase añadida por JavaScript para disparar la animación */
 #win-title.typewriter-anim {
-    /* El ancho final debe ser 100% para revelar todo el texto */
+
     width: 100%; 
-    
-    /* Importante: El número de 'steps' (pasos) debe coincidir con la longitud del texto.
-        Para "¡FELICIDADES!", son 13 caracteres (contando el ¡ y !). */
     animation: 
-        typewriter 2.5s steps(13) forwards, /* 13 pasos para 13 caracteres, 2.5s de duración */
+        typewriter 2.5s steps(13) forwards, 
         blink-cursor 0.75s step-end infinite;
 }
 
-/* Define la animación de tipeo: solo anima el ancho de 0 a 100% */
 @keyframes typewriter {
     from { width: 0 }
     to { width: 100% }
 }
 
-/* Define la animación del cursor: parpadeo */
 @keyframes blink-cursor {
     from, to { border-color: transparent }
     50% { border-color: white }
 }
 
-/* ========================================================= */
-/* --- ESTILOS DEL FOOTER/COPYRIGHT (REINSERTADO Y FIJO) --- */
-/* ========================================================= */
+
 #footer-copyright {
-    position: fixed; /* Lo mantiene fijo en la pantalla */
+    position: fixed; 
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 8px 0; /* Un poco más pequeño para móviles */
+    padding: 8px 0; 
     text-align: center;
     background-color: rgba(0, 0, 0, 0.7); 
     color: #888; 
@@ -705,91 +646,76 @@ h1 {
 }
 
 
-/* ========================================================= */
-/* --- MEDIA QUERY PRINCIPAL PARA TELÉFONOS (RESPONSIVIDAD) --- */
-/* ========================================================= */
 @media (max-width: 800px) {
 
-    /* --- TÍTULOS Y FUENTES --- */
     h1 {
-        font-size: 2.2em; /* Reduce el tamaño del título principal para que quepa */
+        font-size: 2.2em; 
     }
     
     .rules-box {
-        width: 90%; /* Asegura que la caja de reglas no exceda el ancho de la pantalla */
+        width: 90%; 
         padding: 20px;
     }
 
-    /* --- PANTALLA DE JUEGO (CLAVE) --- */
     #game-screen {
-        flex-direction: column; /* Apila los paneles verticalmente (en lugar de lado a lado) */
-        align-items: center;    /* Centra los elementos apilados */
+        flex-direction: column; 
+        align-items: center;    
         padding-top: 20px;
-        height: auto;           /* Permite que la altura crezca y la página se desplace */
+        height: auto;       
     }
 
-    /* 1. Panel de Rondas (AJUSTES CLAVE PARA EL BOTÓN) */
     #rounds-container {
-        width: 90%; /* Ocupa casi todo el ancho disponible */
-        max-height: 25vh; /* Limita la altura de la lista de rondas para dejar espacio a la pregunta */
-        order: -1; /* Mueve el panel de rondas a la parte superior */
+        width: 90%; 
+        max-height: 25vh; 
+        order: -1; 
         margin-bottom: 20px;
-        /* MUY IMPORTANTE: Anula la transformación de deslizamiento de escritorio */
         transform: none !important; 
         overflow-y: auto; 
     }
     
-    /* CLASE EN MÓVIL: SÓLO OCULTAR EL CONTENIDO INTERNO */
-    /* Sobreescribe el estilo de opacidad de escritorio, ocultando con display: none; */
+ 
     #rounds-container.minimized #rounds-content {
         display: none;
         opacity: 1; 
         pointer-events: auto; 
     }
 
-    /* Ajustamos el contenedor al colapsar el contenido para que el espacio ocupado sea mínimo */
     #rounds-container.minimized {
-        max-height: fit-content; /* Se ajusta a la altura del botón */
-        overflow-y: hidden; /* Evita que muestre la barra de scroll si está colapsado */
-        width: 100%; /* El botón de 'Mostrar Rondas' ocupa todo el ancho */
+        max-height: fit-content; 
+        overflow-y: hidden; 
+        width: 100%; 
     }
-    
-    /* 2. Contenedor Principal (Pregunta y Respuestas) - ¡AQUÍ ESTÁ LA SOLUCIÓN! */
+  
     .game-container {
-        width: 90%; /* Ocupa casi todo el ancho disponible */
+        width: 90%; 
         max-width: none; 
         padding: 15px;
-        /* *** CAMBIO CLAVE: Habilita el SCROLL INTERNO *** */
-        max-height: 60vh; /* Limita la altura del contenedor para forzar el scroll */
-        overflow-y: auto; /* Muestra la barra de desplazamiento solo cuando sea necesario */
+        max-height: 60vh; 
+        overflow-y: auto; 
     }
     
-    /* 3. Opciones de Respuesta */
     .answer-options {
-        grid-template-columns: 1fr; /* Cambia de 2 columnas a 1 columna (una respuesta por fila) */
+        grid-template-columns: 1fr; 
         gap: 10px;
     }
 
-    /* 4. Comodines */
     #wildcards-container {
         gap: 10px;
-        flex-wrap: wrap; /* Permite que los comodines salten de línea si es necesario */
+        flex-wrap: wrap; 
     }
     
     .wildcard-btn {
-        width: 60px; /* Reduce el tamaño de los botones de comodín */
+        width: 60px; 
         height: 60px;
         font-size: 0.7em;
     }
 
-    /* 5. Título de Victoria (para que no sea excesivamente grande) */
     #win-screen h1 {
         font-size: 3em !important;
     }
     
-    /* 6. Ajuste del Copyright para que sea más legible en móvil */
     #footer-copyright {
-        font-size: 0.9em; /* Ligeramente más grande para legibilidad */
-        padding: 6px 0; /* Menos espacio vertical */
+        font-size: 0.9em; 
+        padding: 6px 0; 
     }
 }
